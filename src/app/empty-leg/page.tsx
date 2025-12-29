@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dialog";
 import { cn, generateMonthOptions } from "@/lib/utils";
 import toast from "react-hot-toast";
-import emailjs from "@emailjs/browser";
 
 interface EmptyLegFlight {
         id: string;
@@ -76,7 +75,9 @@ export default function EmptyLeg() {
                 setUserInquiryInfo((prev) => ({ ...prev, [name]: value }));
         };
 
-        const subscribe = () => {
+        const [isSubscribing, setIsSubscribing] = useState(false);
+
+        const subscribe = async () => {
                 if (!fullName || !email) {
                         toast.error("Please fill in all fields");
                         return;
@@ -86,11 +87,30 @@ export default function EmptyLeg() {
                         return;
                 }
 
-                setIsSubscribedOpen(false);
-                setFullName("");
-                setEmail("");
-                setConsentChecked(false);
-                toast.success("You have successfully subscribed to our mail list");
+                setIsSubscribing(true);
+
+                try {
+                        const response = await fetch('/api/subscribe', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ fullName, email }),
+                        });
+
+                        if (response.ok) {
+                                setIsSubscribedOpen(false);
+                                setFullName("");
+                                setEmail("");
+                                setConsentChecked(false);
+                                toast.success("You have successfully subscribed to our mail list");
+                        } else {
+                                toast.error("Failed to subscribe. Please try again.");
+                        }
+                } catch (error) {
+                        console.error("Subscription error:", error);
+                        toast.error("Failed to subscribe. Please try again.");
+                } finally {
+                        setIsSubscribing(false);
+                }
         };
 
         const [isSubmittingInquiry, setIsSubmittingInquiry] = useState(false);
@@ -103,38 +123,43 @@ export default function EmptyLeg() {
 
                 setIsSubmittingInquiry(true);
 
-                const templateParams = {
-                        inquiry_type: "Empty Leg Inquiry",
-                        origin: selectedFlight ? `${selectedFlight.route.fromCode} - ${selectedFlight.route.from}` : "N/A",
-                        destination: selectedFlight ? `${selectedFlight.route.toCode} - ${selectedFlight.route.to}` : "N/A",
-                        departure_date: selectedFlight?.date || "N/A",
-                        passenger_count: userInquiryInfo.numberOfPassengers || "Not specified",
-                        passenger_names: userInquiryInfo.fullName,
-                        user_email: userInquiryInfo.emailAddress,
-                        phone_number: userInquiryInfo.phoneNumber,
-                        additional_notes: `Aircraft: ${selectedFlight?.aircraft || "N/A"}, Price: ${selectedFlight?.price || "N/A"}`,
+                const requestBody = {
+                        fullName: userInquiryInfo.fullName,
+                        emailAddress: userInquiryInfo.emailAddress,
+                        phoneNumber: userInquiryInfo.phoneNumber,
+                        numberOfPassengers: userInquiryInfo.numberOfPassengers || "Not specified",
+                        flightDetails: selectedFlight ? {
+                                route: `${selectedFlight.route.fromCode} (${selectedFlight.route.from}) → ${selectedFlight.route.toCode} (${selectedFlight.route.to})`,
+                                date: selectedFlight.date,
+                                aircraft: selectedFlight.aircraft,
+                                price: selectedFlight.price,
+                        } : null,
                 };
 
                 try {
-                        await emailjs.send(
-                                process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_uahoo9j",
-                                process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "template_x3fcfzs",
-                                templateParams,
-                                process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "urvsHSWcfAcTFhHpQ"
-                        );
-                        setIsSubmittingInquiry(false);
-                        setIsInquiryOpen(false);
-                        setUserInquiryInfo({
-                                fullName: "",
-                                emailAddress: "",
-                                phoneNumber: "",
-                                numberOfPassengers: "",
+                        const response = await fetch('/api/empty-leg', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(requestBody),
                         });
-                        toast.success("Your inquiry was sent successfully!");
+
+                        if (response.ok) {
+                                setIsInquiryOpen(false);
+                                setUserInquiryInfo({
+                                        fullName: "",
+                                        emailAddress: "",
+                                        phoneNumber: "",
+                                        numberOfPassengers: "",
+                                });
+                                toast.success("Your inquiry was sent successfully!");
+                        } else {
+                                toast.error("Failed to send inquiry. Please try again.");
+                        }
                 } catch (error) {
-                        setIsSubmittingInquiry(false);
-                        console.error("EmailJS error:", error);
+                        console.error("Empty leg inquiry error:", error);
                         toast.error("Failed to send inquiry. Please try again.");
+                } finally {
+                        setIsSubmittingInquiry(false);
                 }
         };
 
@@ -238,13 +263,13 @@ export default function EmptyLeg() {
                                                         <DialogFooter>
                                                                 <button
                                                                         type="button"
-                                                                        disabled={!consentChecked}
+                                                                        disabled={!consentChecked || isSubscribing}
                                                                         className={cn(
                                                                                 "mt-5 bg-customBlue text-white rounded-lg py-2 px-4 cursor-pointer hover:bg-[#205063] flex items-center justify-around disabled:opacity-50 disabled:cursor-not-allowed"
                                                                         )}
                                                                         onClick={subscribe}
                                                                 >
-                                                                        Subscribe
+                                                                        {isSubscribing ? "Subscribing..." : "Subscribe"}
                                                                 </button>
                                                         </DialogFooter>
                                                 </DialogContent>
