@@ -44,7 +44,7 @@ Vision Fly is a modern, Air Canada-inspired private jet charter booking website 
   - Clear consent message about mailing list
 - Form validation and reset on successful subscription
 - **Dynamic date generation**: Flight dates calculated relative to current date (today, tomorrow, +3 days, etc.)
-- **EmailJS Integration**: Inquiry forms now send via unified EmailJS service
+- **Nodemailer Integration**: All forms now use server-side API routes for dual-email system
 
 ### 4. Mobile Responsiveness
 - Vertical stack layout on mobile devices
@@ -60,7 +60,7 @@ Vision Fly is a modern, Air Canada-inspired private jet charter booking website 
 - **Date Handling**: date-fns, dayjs, react-day-picker
 - **Icons**: Lucide React
 - **Notifications**: React Hot Toast
-- **Email**: Nodemailer (server-side) + EmailJS (client-side for BookFlight)
+- **Email**: Nodemailer (server-side) - All forms use unified dual-email system
 
 ## File Structure
 ```
@@ -72,6 +72,8 @@ src/
 │   └── api/
 │       ├── booking/route.ts (Booking inquiry email handler)
 │       ├── contact/route.ts (Contact form email handler)
+│       ├── empty-leg/route.ts (Empty leg inquiry email handler)
+│       ├── subscribe/route.ts (Mailing list subscription handler)
 │       └── private-charter/route.ts (Charter request email handler)
 ├── components/
 │   └── landing-page/
