@@ -20,8 +20,12 @@ The Vision Fly Team`;
 export async function POST(request: Request) {
   try {
     // Validate credentials first
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
-      console.error('Missing email credentials - GMAIL_USER:', !!process.env.GMAIL_USER, 'GMAIL_PASS:', !!process.env.GMAIL_PASS);
+    const gmailUser = process.env.GMAIL_USER?.trim();
+    const gmailPass = process.env.GMAIL_PASS?.trim();
+    
+    if (!gmailUser || !gmailPass) {
+      console.error('Missing or empty email credentials - GMAIL_USER exists:', !!gmailUser, 'GMAIL_PASS exists:', !!gmailPass);
+      console.error('GMAIL_USER length:', process.env.GMAIL_USER?.length, 'GMAIL_PASS length:', process.env.GMAIL_PASS?.length);
       return NextResponse.json({ 
         success: false, 
         message: 'Email service not configured. Please contact support.' 
@@ -33,14 +37,14 @@ export async function POST(request: Request) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
+        user: gmailUser,
+        pass: gmailPass,
       },
     });
 
     const adminMailOptions = {
-      from: process.env.GMAIL_USER,
-      to: process.env.GMAIL_USER,
+      from: gmailUser,
+      to: gmailUser,
       replyTo: email,
       subject: `[Vision Fly] New Mailing List Subscription`,
       text: `
@@ -62,7 +66,7 @@ Subscriber Information:
     if (email && email.includes('@')) {
       try {
         const userMailOptions = {
-          from: process.env.GMAIL_USER,
+          from: gmailUser,
           to: email,
           subject: USER_CONFIRMATION_SUBJECT,
           text: USER_CONFIRMATION_BODY,
