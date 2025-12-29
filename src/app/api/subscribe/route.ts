@@ -19,6 +19,15 @@ The Vision Fly Team`;
 
 export async function POST(request: Request) {
   try {
+    // Validate credentials first
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+      console.error('Missing email credentials - GMAIL_USER:', !!process.env.GMAIL_USER, 'GMAIL_PASS:', !!process.env.GMAIL_PASS);
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Email service not configured. Please contact support.' 
+      }, { status: 500 });
+    }
+
     const { fullName, email } = await request.json();
 
     const transporter = nodemailer.createTransport({
@@ -67,8 +76,12 @@ Subscriber Information:
 
     return NextResponse.json({ success: true, message: 'Successfully subscribed!' }, { status: 200 });
 
-  } catch (error) {
-    console.error('Email error:', error);
-    return NextResponse.json({ success: false, message: 'Failed to process subscription' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Email error:', error?.message || error);
+    console.error('Full error:', JSON.stringify(error, null, 2));
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Failed to process subscription. Please try again later.' 
+    }, { status: 500 });
   }
 }
