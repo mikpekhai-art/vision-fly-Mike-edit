@@ -18,6 +18,10 @@ Safe travels,
 The Vision Fly Team`;
 
 export async function POST(request: Request) {
+  console.log("DEBUG: Checking Env Vars");
+  console.log("User length:", process.env.GMAIL_USER ? process.env.GMAIL_USER.length : "Missing");
+  console.log("Pass length:", process.env.GMAIL_PASS ? process.env.GMAIL_PASS.length : "Missing");
+
   try {
     const { fullName, email } = await request.json();
 
