@@ -9,7 +9,9 @@ const SIGNATURE_HTML = `
 <table cellspacing="0" cellpadding="0" border="0" style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.4; color: #333; max-width: 500px;">
   <tr>
     <td valign="top" style="padding-right: 20px; width: 120px;">
-      <img src="https://www.visionfly.com.ng/email-icons/visionfly%20logo.PNG" alt="Vision Fly" width="110" style="display: block; border: 0;">
+      <a href="https://www.visionfly.com.ng" style="text-decoration: none;">
+        <img src="https://www.visionfly.com.ng/email-icons/visionfly%20logo.PNG" alt="Vision Fly" width="110" style="display: block; border: 0;">
+      </a>
     </td>
     <td valign="top" style="border-left: 2px solid #0b3d91; padding-left: 20px;">
       <strong style="font-size: 18px; color: #000;">Adebusoye Adejumo</strong><br>
@@ -30,12 +32,12 @@ const SIGNATURE_HTML = `
       <table cellspacing="0" cellpadding="0" border="0">
         <tr>
           <td style="padding-right: 5px;">
-            <a href="https://instagram.com/visionfly" style="text-decoration: none;">
+            <a href="https://www.instagram.com/vision_fly.ng" style="text-decoration: none;">
               <img src="https://www.visionfly.com.ng/email-icons/instagram.png" alt="IG" width="24" style="border:0; display:block;">
             </a>
           </td>
           <td style="padding-right: 5px;">
-            <a href="https://linkedin.com/company/visionfly" style="text-decoration: none;">
+            <a href="https://ng.linkedin.com/in/adebusoye-adejumo-b8b07763" style="text-decoration: none;">
               <img src="https://www.visionfly.com.ng/email-icons/linkedin.png" alt="LI" width="24" style="border:0; display:block;">
             </a>
           </td>
