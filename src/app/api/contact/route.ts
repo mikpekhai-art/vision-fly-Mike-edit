@@ -76,10 +76,10 @@ Safe travels,
 The Vision Fly Team`;
 
 export async function POST(request: Request) {
-  console.log("DEBUG: Checking Env Vars");
-  // Updated logging to check the new variables
-  console.log("User:", process.env.EMAIL_USER ? "Set" : "Missing");
-  console.log("Host:", process.env.EMAIL_HOST ? "Set" : "Missing");
+  console.log("DEBUG: Checking Env Vars for Contact Route");
+  console.log("EMAIL_HOST:", process.env.EMAIL_HOST ? `Set (${process.env.EMAIL_HOST})` : "Missing");
+  console.log("EMAIL_USER:", process.env.EMAIL_USER ? `Set (length: ${process.env.EMAIL_USER.length})` : "Missing");
+  console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? `Set (length: ${process.env.EMAIL_PASS.length})` : "Missing");
 
   try {
     const { name, email, subject, message } = await request.json();
