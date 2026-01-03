@@ -79,6 +79,9 @@ export async function GET(request: Request) {
 
     const flightData = await flightResponse.json();
     
+    // Markup amount in Naira (₦100,000)
+    const MARKUP_AMOUNT = 100000;
+
     // Transform the Amadeus response into a simpler format for the frontend
     const flights = flightData.data?.map((offer: any) => {
       const outboundSegments = offer.itineraries[0]?.segments || [];
@@ -87,12 +90,18 @@ export async function GET(request: Request) {
       const firstSegment = outboundSegments[0];
       const lastOutboundSegment = outboundSegments[outboundSegments.length - 1];
       
+      // Apply markup to prices
+      const originalTotal = parseFloat(offer.price.total);
+      const originalGrandTotal = parseFloat(offer.price.grandTotal);
+      const markedUpTotal = (originalTotal + MARKUP_AMOUNT).toFixed(2);
+      const markedUpGrandTotal = (originalGrandTotal + MARKUP_AMOUNT).toFixed(2);
+      
       return {
         id: offer.id,
         price: {
-          total: offer.price.total,
+          total: markedUpTotal,
           currency: offer.price.currency,
-          grandTotal: offer.price.grandTotal,
+          grandTotal: markedUpGrandTotal,
         },
         outbound: {
           departure: {

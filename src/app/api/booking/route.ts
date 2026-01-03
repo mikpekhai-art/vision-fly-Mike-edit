@@ -92,7 +92,9 @@ export async function POST(request: Request) {
       departureDate,
       returnDate,
       passengerCount,
-      passengerList
+      passengerList,
+      selectedFlightNumber,
+      selectedFlightPrice
     } = await request.json();
 
     const transporter = nodemailer.createTransport({
@@ -109,9 +111,13 @@ export async function POST(request: Request) {
       from: `"Vision Fly System" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL || "visionfly.ng@gmail.com",
       replyTo: contactEmail,
-      subject: `[Vision Fly Booking] New Inquiry from ${contactName}`,
+      subject: selectedFlightNumber 
+        ? `[Vision Fly Booking] Flight ${selectedFlightNumber} - ${contactName}` 
+        : `[Vision Fly Booking] New Inquiry from ${contactName}`,
       text: `
 FLIGHT BOOKING INQUIRY
+${selectedFlightNumber ? `\n*** SELECTED FLIGHT: ${selectedFlightNumber} ***` : ''}
+${selectedFlightPrice ? `*** QUOTED PRICE: ${selectedFlightPrice} ***\n` : ''}
 
 Contact Information:
 - Name: ${contactName}
@@ -125,6 +131,8 @@ Flight Details:
 - Departure Date: ${departureDate}
 - Return Date: ${returnDate || 'N/A (One-way)'}
 - Passenger Count: ${passengerCount}
+${selectedFlightNumber ? `- Selected Flight Number: ${selectedFlightNumber}` : '- No specific flight selected (Custom Quote Request)'}
+${selectedFlightPrice ? `- Quoted Price: ${selectedFlightPrice}` : ''}
 
 Passenger Manifest:
 ${passengerList || 'Not provided'}
@@ -132,6 +140,17 @@ ${passengerList || 'Not provided'}
       html: `
         <div style="font-family: Arial, sans-serif;">
           <h2 style="color: #0b3d91;">Flight Booking Inquiry</h2>
+          
+          ${selectedFlightNumber ? `
+          <div style="background: #e6f3ff; border-left: 4px solid #0b3d91; padding: 15px; margin-bottom: 20px;">
+            <h3 style="margin: 0 0 10px 0; color: #0b3d91;">Selected Flight: ${selectedFlightNumber}</h3>
+            ${selectedFlightPrice ? `<p style="margin: 0; font-size: 18px; font-weight: bold;">Quoted Price: ${selectedFlightPrice}</p>` : ''}
+          </div>
+          ` : `
+          <div style="background: #fff3e6; border-left: 4px solid #ff9800; padding: 15px; margin-bottom: 20px;">
+            <p style="margin: 0; color: #e65100;"><strong>Custom Quote Request</strong> - No specific flight selected</p>
+          </div>
+          `}
           
           <h3>Contact Information</h3>
           <p><strong>Name:</strong> ${contactName}</p>
