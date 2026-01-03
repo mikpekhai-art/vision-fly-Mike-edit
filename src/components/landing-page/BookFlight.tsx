@@ -72,6 +72,9 @@ const BookFlight = () => {
         const [departureDateOpen, setDepartureDateOpen] = useState(false);
         const [returnDateOpen, setReturnDateOpen] = useState(false);
         const [isSubmittingInquiry, setIsSubmittingInquiry] = useState(false);
+        const [liveFlights, setLiveFlights] = useState<any[]>([]);
+        const [selectedFlight, setSelectedFlight] = useState<any>(null);
+        const [flightSearchError, setFlightSearchError] = useState("");
 
         const form = useRef<HTMLFormElement>(null);
         const [oneWayPassengerInfo, setOneWayPassengerInfo] =
@@ -177,57 +180,69 @@ const BookFlight = () => {
                         return;
                 }
 
-                // Validation passed - open booking modal immediately
-                setShowBookingModal(true);
-                setPassengerNames(Array(adults + children).fill(""));
+                // Reset states
+                setLiveFlights([]);
+                setFlightSearchError("");
                 setIsLoading(true);
 
-                const flightSearch = {
-                        tripDetails: [
-                                {
-                                        originAirportCode: originAirport?.iata,
-                                        destinationAirportCode: destinationAirport?.iata,
-                                        departureDate: formattedDate,
-                                        departureCity: originAirport?.city,
-                                        arrivalCity: destinationAirport?.city,
-                                        cabinType: "ECONOMY",
-                                },
-                        ],
-                        flightType: "ONE_WAY",
-                        numberOfAdult: 1,
-                        numberOfChildren: 0,
-                        numberOfInfant: 0,
-                        uniqueSession: "frJ6zU1bGSLdJ86",
-                        directFlight: true,
-                        refundable: false,
-                        isDayFlight: true,
-                        prefferedAirlineCodes: [],
-                        departureCity: originAirport?.city,
-                        arrivalCity: destinationAirport?.city,
-                };
+                try {
+                        // Build API URL with parameters
+                        const searchDate = format(date!, "yyyy-MM-dd");
+                        let apiUrl = `/api/flight-search?origin=${originAirport?.iata}&destination=${destinationAirport?.iata}&date=${searchDate}&adults=${adults}&children=${children}`;
+                        
+                        if (tripType === "round-trip" && returnDate) {
+                                const returnDateFormatted = format(returnDate, "yyyy-MM-dd");
+                                apiUrl += `&returnDate=${returnDateFormatted}`;
+                        }
 
-                // try {
-                //      const response = await fetch(
-                //              "https://api.travelbeta.com/v1/api/flight",
-                //              {
-                //                      method: "POST",
-                //                      headers: {
-                //                              "Content-Type": "application/json",
-                //                              "X-Api-Key": "24c9mti53ykc31z1t5u5",
-                //                      },
-                //                      body: JSON.stringify(flightSearch),
-                //              }
-                //      );
-                //      const data = await response.json();
-                //      setIsLoading(false);
-                //      setFlightsData(data?.data?.airPricedIternaryList);
-                // } catch (error) {
-                //      console.log(error);
-                // }
+                        const response = await fetch(apiUrl);
+                        const data = await response.json();
 
-                setTimeout(() => {
                         setIsLoading(false);
-                }, 3000);
+
+                        if (data.success && data.flights && data.flights.length > 0) {
+                                setLiveFlights(data.flights);
+                                setFlightSearchError("");
+                        } else if (data.error) {
+                                setFlightSearchError(data.details || data.error);
+                                setLiveFlights([]);
+                        } else {
+                                setFlightSearchError("No flights found for this route and date. Try different dates or airports.");
+                                setLiveFlights([]);
+                        }
+                } catch (error) {
+                        console.error("Flight search error:", error);
+                        setIsLoading(false);
+                        setFlightSearchError("Failed to search flights. Please try again.");
+                        setLiveFlights([]);
+                }
+        };
+
+        const handleBookFlight = (flight: any) => {
+                setSelectedFlight(flight);
+                setShowBookingModal(true);
+                setPassengerNames(Array(adults + children).fill(""));
+        };
+
+        const formatFlightTime = (isoString: string) => {
+                if (!isoString) return "";
+                const date = new Date(isoString);
+                return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+        };
+
+        const formatFlightDate = (isoString: string) => {
+                if (!isoString) return "";
+                const date = new Date(isoString);
+                return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+        };
+
+        const formatDuration = (isoDuration: string) => {
+                if (!isoDuration) return "";
+                const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+                if (!match) return isoDuration;
+                const hours = match[1] ? `${match[1]}h` : "";
+                const minutes = match[2] ? ` ${match[2]}m` : "";
+                return `${hours}${minutes}`.trim();
         };
 
         const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -534,6 +549,10 @@ const BookFlight = () => {
                         contactPhone: bookingPhone,
                         passengerCount: adults + children,
                         passengerList: passengerNames.join("\n"),
+                        // Include selected flight details if available
+                        selectedFlightId: selectedFlight?.id || null,
+                        selectedFlightPrice: selectedFlight ? `${selectedFlight.price?.currency} ${selectedFlight.price?.grandTotal}` : null,
+                        selectedFlightNumber: selectedFlight?.outbound?.flightNumber || null,
                 };
 
                 try {
@@ -941,27 +960,65 @@ const BookFlight = () => {
                                                         </div>
 
                                                         {/* Booking Inquiry Modal */}
-                                                        <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
+                                                        <Dialog open={showBookingModal} onOpenChange={(open) => { setShowBookingModal(open); if (!open) setSelectedFlight(null); }}>
                                                                 <DialogContent className="w-[90vw] max-w-2xl max-h-[85vh] overflow-y-auto">
                                                                         <DialogHeader>
-                                                                                <DialogTitle className="text-customBlue text-xl md:text-2xl">Let us find your perfect flight.</DialogTitle>
+                                                                                <DialogTitle className="text-customBlue text-xl md:text-2xl">
+                                                                                        {selectedFlight ? "Complete Your Booking" : "Let us find your perfect flight."}
+                                                                                </DialogTitle>
                                                                                 <DialogDescription asChild>
                                                                                         <div className="text-gray-600 mt-2">
-                                                                                                <p className="mb-3">We do more than just search. Our travel experts analyze thousands of routes to find you:</p>
-                                                                                                <ul className="space-y-2">
-                                                                                                        <li className="flex items-center gap-2">
-                                                                                                                <TrendingDown size={18} className="text-customBlue" />
-                                                                                                                <span>The absolute lowest fares</span>
-                                                                                                        </li>
-                                                                                                        <li className="flex items-center gap-2">
-                                                                                                                <CalendarIcon size={18} className="text-customBlue" />
-                                                                                                                <span>Flexible date options to save you money</span>
-                                                                                                        </li>
-                                                                                                        <li className="flex items-center gap-2">
-                                                                                                                <Zap size={18} className="text-customBlue" />
-                                                                                                                <span>The fastest routes with minimal stopovers</span>
-                                                                                                        </li>
-                                                                                                </ul>
+                                                                                                {selectedFlight ? (
+                                                                                                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                                                                                                <div className="flex justify-between items-start mb-3">
+                                                                                                                        <div>
+                                                                                                                                <p className="font-semibold text-customBlue text-lg">
+                                                                                                                                        {selectedFlight.outbound?.departure?.airport} → {selectedFlight.outbound?.arrival?.airport}
+                                                                                                                                </p>
+                                                                                                                                <p className="text-sm">
+                                                                                                                                        {formatFlightDate(selectedFlight.outbound?.departure?.time)} • {formatFlightTime(selectedFlight.outbound?.departure?.time)} - {formatFlightTime(selectedFlight.outbound?.arrival?.time)}
+                                                                                                                                </p>
+                                                                                                                                <p className="text-xs text-gray-500">Flight {selectedFlight.outbound?.flightNumber}</p>
+                                                                                                                        </div>
+                                                                                                                        <div className="text-right">
+                                                                                                                                <p className="text-xl font-bold text-customBlue">
+                                                                                                                                        {selectedFlight.price?.currency === "NGN" ? "₦" : selectedFlight.price?.currency}{" "}
+                                                                                                                                        {parseFloat(selectedFlight.price?.grandTotal || selectedFlight.price?.total).toLocaleString()}
+                                                                                                                                </p>
+                                                                                                                                <p className="text-xs text-gray-500">per person</p>
+                                                                                                                        </div>
+                                                                                                                </div>
+                                                                                                                {selectedFlight.return && (
+                                                                                                                        <div className="pt-3 border-t border-gray-200">
+                                                                                                                                <p className="font-semibold text-customBlue">
+                                                                                                                                        {selectedFlight.return?.departure?.airport} → {selectedFlight.return?.arrival?.airport}
+                                                                                                                                </p>
+                                                                                                                                <p className="text-sm">
+                                                                                                                                        {formatFlightDate(selectedFlight.return?.departure?.time)} • {formatFlightTime(selectedFlight.return?.departure?.time)} - {formatFlightTime(selectedFlight.return?.arrival?.time)}
+                                                                                                                                </p>
+                                                                                                                        </div>
+                                                                                                                )}
+                                                                                                                <p className="text-xs text-green-600 mt-2 font-medium">Fill in your details below and we will confirm your booking.</p>
+                                                                                                        </div>
+                                                                                                ) : (
+                                                                                                        <>
+                                                                                                                <p className="mb-3">We do more than just search. Our travel experts analyze thousands of routes to find you:</p>
+                                                                                                                <ul className="space-y-2">
+                                                                                                                        <li className="flex items-center gap-2">
+                                                                                                                                <TrendingDown size={18} className="text-customBlue" />
+                                                                                                                                <span>The absolute lowest fares</span>
+                                                                                                                        </li>
+                                                                                                                        <li className="flex items-center gap-2">
+                                                                                                                                <CalendarIcon size={18} className="text-customBlue" />
+                                                                                                                                <span>Flexible date options to save you money</span>
+                                                                                                                        </li>
+                                                                                                                        <li className="flex items-center gap-2">
+                                                                                                                                <Zap size={18} className="text-customBlue" />
+                                                                                                                                <span>The fastest routes with minimal stopovers</span>
+                                                                                                                        </li>
+                                                                                                                </ul>
+                                                                                                        </>
+                                                                                                )}
                                                                                         </div>
                                                                                 </DialogDescription>
                                                                         </DialogHeader>
@@ -1007,7 +1064,7 @@ const BookFlight = () => {
                                                                                                 Sending...
                                                                                         </>
                                                                                 ) : (
-                                                                                        "Send Me My Options"
+                                                                                        selectedFlight ? "Confirm Booking" : "Send Me My Options"
                                                                                 )}
                                                                         </button>
                                                                         <div className="flex items-center justify-center gap-2 mt-3 text-gray-400 text-xs">
@@ -1017,24 +1074,121 @@ const BookFlight = () => {
                                                                 </DialogContent>
                                                         </Dialog>
                                                 </form>
-                                                {/* Search One Way Trip Data */}
-                                                <div className="mt-5">
+                                                {/* Live Flight Results */}
+                                                <div className="mt-5 w-full max-w-4xl">
                                                         {isLoading ? (
-                                                                <TailSpin
-                                                                        color="#065777"
-                                                                        height="50px"
-                                                                        width="50px"
-                                                                />
+                                                                <div className="flex flex-col items-center gap-3 py-8">
+                                                                        <TailSpin color="#065777" height="50" width="50" />
+                                                                        <p className="text-customBlue font-medium">Searching for the best flights...</p>
+                                                                </div>
                                                         ) : (
                                                                 <>
-                                                                        {!flightsData ||
-                                                                                (hasSearched && (
-                                                                                        <div className="mt-4 w-[300px] md:w-[500px] rounded-xl text-customBlue bg-slate-200 shadow-md py-4 px-6">
-                                                                                                <h1 className="font-semibold text-lg">
-                                                                                                        No Available Flights
-                                                                                                </h1>
+                                                                        {/* Error Message */}
+                                                                        {hasSearched && flightSearchError && (
+                                                                                <div className="mt-4 w-full rounded-xl text-customBlue bg-amber-50 border border-amber-200 shadow-md py-4 px-6">
+                                                                                        <h1 className="font-semibold text-lg">{flightSearchError}</h1>
+                                                                                        <p className="text-sm text-gray-600 mt-2">
+                                                                                                Need assistance? <button onClick={() => { setShowBookingModal(true); setPassengerNames(Array(adults + children).fill("")); }} className="text-customBlue underline font-medium">Request a custom quote</button>
+                                                                                        </p>
+                                                                                </div>
+                                                                        )}
+
+                                                                        {/* Live Flight Results */}
+                                                                        {liveFlights.length > 0 && (
+                                                                                <div className="mt-4 space-y-4">
+                                                                                        <h3 className="text-lg font-semibold text-customBlue">
+                                                                                                {liveFlights.length} Flight{liveFlights.length > 1 ? "s" : ""} Found
+                                                                                        </h3>
+                                                                                        {liveFlights.map((flight: any) => (
+                                                                                                <div key={flight.id} className="w-full rounded-xl bg-white border border-gray-200 shadow-md p-5 hover:shadow-lg transition">
+                                                                                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                                                                                                {/* Flight Info */}
+                                                                                                                <div className="flex-1">
+                                                                                                                        {/* Outbound */}
+                                                                                                                        <div className="flex items-center gap-4 mb-3">
+                                                                                                                                <div className="text-center">
+                                                                                                                                        <p className="text-xl font-bold text-customBlue">{formatFlightTime(flight.outbound?.departure?.time)}</p>
+                                                                                                                                        <p className="text-sm text-gray-600">{flight.outbound?.departure?.airport}</p>
+                                                                                                                                </div>
+                                                                                                                                <div className="flex-1 flex flex-col items-center">
+                                                                                                                                        <p className="text-xs text-gray-500">{formatDuration(flight.outbound?.duration)}</p>
+                                                                                                                                        <div className="w-full h-[2px] bg-gray-300 relative my-1">
+                                                                                                                                                <PlaneTakeoff size={16} className="absolute left-1/2 -translate-x-1/2 -top-2 text-customBlue" />
+                                                                                                                                        </div>
+                                                                                                                                        <p className="text-xs text-gray-500">{flight.outbound?.stops === 0 ? "Direct" : `${flight.outbound?.stops} stop${flight.outbound?.stops > 1 ? "s" : ""}`}</p>
+                                                                                                                                </div>
+                                                                                                                                <div className="text-center">
+                                                                                                                                        <p className="text-xl font-bold text-customBlue">{formatFlightTime(flight.outbound?.arrival?.time)}</p>
+                                                                                                                                        <p className="text-sm text-gray-600">{flight.outbound?.arrival?.airport}</p>
+                                                                                                                                </div>
+                                                                                                                        </div>
+                                                                                                                        
+                                                                                                                        {/* Return (if round trip) */}
+                                                                                                                        {flight.return && (
+                                                                                                                                <div className="flex items-center gap-4 pt-3 border-t border-gray-100">
+                                                                                                                                        <div className="text-center">
+                                                                                                                                                <p className="text-xl font-bold text-customBlue">{formatFlightTime(flight.return?.departure?.time)}</p>
+                                                                                                                                                <p className="text-sm text-gray-600">{flight.return?.departure?.airport}</p>
+                                                                                                                                        </div>
+                                                                                                                                        <div className="flex-1 flex flex-col items-center">
+                                                                                                                                                <p className="text-xs text-gray-500">{formatDuration(flight.return?.duration)}</p>
+                                                                                                                                                <div className="w-full h-[2px] bg-gray-300 relative my-1">
+                                                                                                                                                        <PlaneLanding size={16} className="absolute left-1/2 -translate-x-1/2 -top-2 text-customBlue" />
+                                                                                                                                                </div>
+                                                                                                                                                <p className="text-xs text-gray-500">{flight.return?.stops === 0 ? "Direct" : `${flight.return?.stops} stop${flight.return?.stops > 1 ? "s" : ""}`}</p>
+                                                                                                                                        </div>
+                                                                                                                                        <div className="text-center">
+                                                                                                                                                <p className="text-xl font-bold text-customBlue">{formatFlightTime(flight.return?.arrival?.time)}</p>
+                                                                                                                                                <p className="text-sm text-gray-600">{flight.return?.arrival?.airport}</p>
+                                                                                                                                        </div>
+                                                                                                                                </div>
+                                                                                                                        )}
+                                                                                                                        
+                                                                                                                        <p className="text-xs text-gray-400 mt-2">Flight {flight.outbound?.flightNumber} {flight.numberOfBookableSeats && `• ${flight.numberOfBookableSeats} seats left`}</p>
+                                                                                                                </div>
+                                                                                                                
+                                                                                                                {/* Price & Book */}
+                                                                                                                <div className="flex flex-col items-center md:items-end gap-2 md:min-w-[150px]">
+                                                                                                                        <p className="text-2xl font-bold text-customBlue">
+                                                                                                                                {flight.price?.currency === "NGN" ? "₦" : flight.price?.currency}{" "}
+                                                                                                                                {parseFloat(flight.price?.grandTotal || flight.price?.total).toLocaleString()}
+                                                                                                                        </p>
+                                                                                                                        <p className="text-xs text-gray-500">per person</p>
+                                                                                                                        <button
+                                                                                                                                onClick={() => handleBookFlight(flight)}
+                                                                                                                                className="mt-2 w-full md:w-auto px-6 py-2 bg-customBlue text-white rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2"
+                                                                                                                        >
+                                                                                                                                Book This Flight
+                                                                                                                                <ArrowRight size={18} />
+                                                                                                                        </button>
+                                                                                                                </div>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                        ))}
+                                                                                        
+                                                                                        {/* Custom Quote Option */}
+                                                                                        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
+                                                                                                <p className="text-gray-600 mb-3">
+                                                                                                        Need a different option? Let our team find the best deal for you.
+                                                                                                </p>
+                                                                                                <button
+                                                                                                        onClick={() => { setSelectedFlight(null); setShowBookingModal(true); setPassengerNames(Array(adults + children).fill("")); }}
+                                                                                                        className="px-6 py-2 border-2 border-customBlue text-customBlue rounded-lg font-semibold hover:bg-customBlue hover:text-white transition"
+                                                                                                >
+                                                                                                        Request Custom Quote
+                                                                                                </button>
                                                                                         </div>
-                                                                                ))}
+                                                                                </div>
+                                                                        )}
+
+                                                                        {/* Legacy flight display (commented out for reference) */}
+                                                                        {false && !flightsData && (hasSearched && (
+                                                                                <div className="mt-4 w-[300px] md:w-[500px] rounded-xl text-customBlue bg-slate-200 shadow-md py-4 px-6">
+                                                                                        <h1 className="font-semibold text-lg">
+                                                                                                No Available Flights
+                                                                                        </h1>
+                                                                                </div>
+                                                                        ))}
 
                                                                         {flightsData &&
                                                                                 flightsData?.map((flightData: any) => (

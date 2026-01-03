@@ -13,6 +13,16 @@ export async function GET(request: Request) {
   console.log("Origin:", origin, "Destination:", destination, "Date:", date);
   console.log("Return Date:", returnDate, "Adults:", adults, "Children:", children);
 
+  // Check for required environment variables
+  if (!process.env.AMADEUS_CLIENT_ID || !process.env.AMADEUS_CLIENT_SECRET) {
+    console.error("Missing Amadeus API credentials. Please set AMADEUS_CLIENT_ID and AMADEUS_CLIENT_SECRET.");
+    return NextResponse.json({ 
+      error: 'Flight search service unavailable', 
+      details: 'API credentials not configured',
+      allowCustomQuote: true 
+    }, { status: 503 });
+  }
+
   if (!origin || !destination || !date) {
     return NextResponse.json({ error: 'Missing required parameters (origin, destination, date)' }, { status: 400 });
   }
