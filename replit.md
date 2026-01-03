@@ -16,8 +16,15 @@ Vision Fly is a modern, Air Canada-inspired private jet charter booking website 
   - Round-trip: Departure + Return date pickers
 - **Passenger counter** with +/- controls (adults & children)
 - **Swap button** (shows ArrowRight for one-way, ArrowLeftRight for round-trip)
+- **Live Flight Search with Amadeus API**:
+  - Real-time flight pricing from Amadeus Flight Offers API
+  - Displays flight cards with price, duration, stops, and carrier info
+  - "Book This Flight" button on each result opens booking modal with flight details
+  - "Request Custom Quote" option for users who prefer personalized assistance
+  - Graceful fallback to custom quote when API unavailable
 - **Booking inquiry modal** that triggers on search submit with:
   - Dynamic passenger name inputs based on total count
+  - Selected flight details displayed when booking specific flight
   - Email and phone fields
   - Success message
 
