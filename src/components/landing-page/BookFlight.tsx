@@ -842,32 +842,38 @@ const BookFlight = () => {
 
                                                                 {/* Row 4: Dates - Mobile */}
                                                                 <div className="flex items-center border-b border-gray-100 py-4">
-                                                                        <CalendarIcon size={24} className="text-customBlue mr-4" />
+                                                                        <CalendarIcon size={24} className="text-customBlue mr-4 flex-shrink-0" />
                                                                         <div className="flex-1 flex">
                                                                                 <Popover open={departureDateOpen} onOpenChange={setDepartureDateOpen}>
                                                                                         <PopoverTrigger asChild>
-                                                                                                <div className={`flex-1 cursor-pointer pr-4 ${tripType === "round-trip" ? "border-r border-gray-200" : ""}`}>
+                                                                                                <button 
+                                                                                                        type="button"
+                                                                                                        className={`flex-1 text-left pr-4 ${tripType === "round-trip" ? "border-r border-gray-200" : ""}`}
+                                                                                                >
                                                                                                         <div className="text-xs text-gray-500">Departure date</div>
                                                                                                         <div className={`text-base font-semibold ${date ? "text-gray-900" : "text-gray-400"}`}>
                                                                                                                 {date ? format(date, "MMM dd, yyyy") : "Select"}
                                                                                                         </div>
-                                                                                                </div>
+                                                                                                </button>
                                                                                         </PopoverTrigger>
-                                                                                        <PopoverContent className="w-auto p-0">
+                                                                                        <PopoverContent className="w-auto p-0 z-50">
                                                                                                 <Calendar mode="single" selected={date} onSelect={handleDateSelect} disabled={{ before: new Date() }} initialFocus />
                                                                                         </PopoverContent>
                                                                                 </Popover>
                                                                                 {tripType === "round-trip" && (
                                                                                         <Popover open={returnDateOpen} onOpenChange={setReturnDateOpen}>
                                                                                                 <PopoverTrigger asChild>
-                                                                                                        <div className="flex-1 cursor-pointer pl-4">
+                                                                                                        <button 
+                                                                                                                type="button"
+                                                                                                                className="flex-1 text-left pl-4"
+                                                                                                        >
                                                                                                                 <div className="text-xs text-gray-500">Return date</div>
                                                                                                                 <div className={`text-base font-semibold ${returnDate ? "text-gray-900" : "text-gray-400"}`}>
                                                                                                                         {returnDate ? format(returnDate, "MMM dd, yyyy") : "Select"}
                                                                                                                 </div>
-                                                                                                        </div>
+                                                                                                        </button>
                                                                                                 </PopoverTrigger>
-                                                                                                <PopoverContent className="w-auto p-0">
+                                                                                                <PopoverContent className="w-auto p-0 z-50">
                                                                                                         <Calendar mode="single" selected={returnDate} onSelect={handleReturnDateSelectWithClose} disabled={{ before: date || new Date() }} initialFocus />
                                                                                                 </PopoverContent>
                                                                                         </Popover>
