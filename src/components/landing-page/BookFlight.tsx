@@ -75,8 +75,19 @@ const BookFlight = () => {
         const [liveFlights, setLiveFlights] = useState<any[]>([]);
         const [selectedFlight, setSelectedFlight] = useState<any>(null);
         const [flightSearchError, setFlightSearchError] = useState("");
+        const [isMobile, setIsMobile] = useState(false);
 
         const form = useRef<HTMLFormElement>(null);
+        
+        // Detect mobile screen size
+        useEffect(() => {
+                const checkMobile = () => {
+                        setIsMobile(window.innerWidth < 768);
+                };
+                checkMobile();
+                window.addEventListener('resize', checkMobile);
+                return () => window.removeEventListener('resize', checkMobile);
+        }, []);
         const [oneWayPassengerInfo, setOneWayPassengerInfo] =
                 useState<FlightBookingInfo>({
                         title: "",
@@ -703,7 +714,8 @@ const BookFlight = () => {
 
                                                         {/* Main Search Row - Responsive Layout */}
                                                         {/* Desktop Layout */}
-                                                        <div className="hidden md:flex md:flex-row md:gap-2 md:items-center">
+                                                        {!isMobile && (
+                                                        <div className="flex flex-row gap-2 items-center">
                                                                 {/* Departure Airport */}
                                                                 <div className="relative w-[300px]">
                                                                         <div 
@@ -957,9 +969,11 @@ const BookFlight = () => {
                                                                         </button>
                                                                 </div>
                                                         </div>
+                                                        )}
 
                                                         {/* Mobile Layout */}
-                                                        <div className="flex flex-col gap-3 md:hidden">
+                                                        {isMobile && (
+                                                        <div className="flex flex-col gap-3">
                                                                 {/* Airports Row (side by side) */}
                                                                 <div className="flex flex-row items-center gap-1">
                                                                         {/* Departure Airport */}
@@ -1217,6 +1231,7 @@ const BookFlight = () => {
                                                                         </div>
                                                                 </div>
                                                         </div>
+                                                        )}
 
                                                         {/* Booking Inquiry Modal */}
                                                         <Dialog open={showBookingModal} onOpenChange={(open) => { setShowBookingModal(open); if (!open) setSelectedFlight(null); }}>
