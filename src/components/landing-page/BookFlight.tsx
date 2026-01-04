@@ -7,7 +7,7 @@ import {
 } from "@/lib/utils";
 import { FormEvent, useEffect, useState, useRef, ChangeEvent } from "react";
 import { format } from "date-fns";
-import { ArrowRight, Calendar as CalendarIcon, ArrowLeftRight, Plus, Minus, PlaneTakeoff, PlaneLanding, ChevronDown, TrendingDown, Zap, Lock, Plane, Users } from "lucide-react";
+import { ArrowRight, Calendar as CalendarIcon, ArrowLeftRight, Plus, Minus, PlaneTakeoff, PlaneLanding, ChevronDown, TrendingDown, Zap, Lock } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
         Popover,
@@ -598,405 +598,111 @@ const BookFlight = () => {
                                         <>
                                                 <form
                                                         onSubmit={handleSubmit}
-                                                        className="w-full max-w-6xl bg-white rounded-2xl shadow-lg py-6 px-4 md:px-8 relative"
+                                                        className="w-full max-w-6xl bg-white rounded-2xl shadow-lg py-6 px-8 relative"
                                                 >
-                                                        {/* ===== MOBILE LAYOUT ===== */}
-                                                        <div className="md:hidden">
-                                                                {/* Row 1: Airport Cards Side by Side */}
-                                                                <div className="flex items-center gap-2 mb-4">
-                                                                        {/* Departure Airport - Mobile */}
-                                                                        <div className="relative flex-1">
-                                                                                <div 
-                                                                                        onClick={() => {
-                                                                                                if (!editingOrigin) {
-                                                                                                        setEditingOrigin(true);
-                                                                                                        if (originAirport?.iata) {
-                                                                                                                setSearchFromText(originAirport.iata);
-                                                                                                        }
-                                                                                                }
-                                                                                        }}
-                                                                                        className={`border-2 rounded-xl p-4 min-h-24 flex flex-col justify-center items-center transition cursor-text ${
-                                                                                                fieldErrors.origin
-                                                                                                        ? 'border-red-500 bg-red-50'
-                                                                                                        : editingOrigin 
-                                                                                                                ? 'border-customBlue bg-white shadow-md' 
-                                                                                                                : 'border-gray-100 bg-white shadow-sm'
-                                                                                        }`}
-                                                                                >
-                                                                                        {editingOrigin ? (
-                                                                                                <input
-                                                                                                        autoFocus
-                                                                                                        value={searchFromText}
-                                                                                                        onChange={(e) => setSearchFromText(e.target.value)}
-                                                                                                        onBlur={() => {
-                                                                                                                setTimeout(() => {
-                                                                                                                        if (!searchFromText && !originAirport?.iata) {
-                                                                                                                                setEditingOrigin(false);
-                                                                                                                        }
-                                                                                                                }, 200);
-                                                                                                        }}
-                                                                                                        placeholder="Search..."
-                                                                                                        className="text-lg font-medium bg-transparent focus:outline-none text-customBlue w-full text-center"
-                                                                                                        autoComplete="off"
-                                                                                                />
-                                                                                        ) : originAirport?.iata ? (
-                                                                                                <>
-                                                                                                        <div className="text-2xl font-bold text-customBlue">{originAirport.iata}</div>
-                                                                                                        <div className="text-xs text-gray-500 mt-1 text-center">{originAirport.city}</div>
-                                                                                                </>
-                                                                                        ) : (
-                                                                                                <>
-                                                                                                        <PlaneTakeoff size={32} className="text-customBlue mb-1" />
-                                                                                                        <span className="text-sm text-customBlue font-medium">Departing from</span>
-                                                                                                </>
-                                                                                        )}
-                                                                                </div>
-                                                                                {editingOrigin && airportsFrom.length > 0 && (
-                                                                                        <div className="absolute z-50 top-full left-0 mt-1 w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
-                                                                                                {airportsFrom?.map((airportFrom: any) => (
-                                                                                                        <div
-                                                                                                                key={airportFrom._id}
-                                                                                                                className="px-3 py-2 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0"
-                                                                                                                onClick={() => {
-                                                                                                                        setOriginAirport(airportFrom);
-                                                                                                                        setSearchFromText("");
-                                                                                                                        setEditingOrigin(false);
-                                                                                                                }}
-                                                                                                        >
-                                                                                                                <div className="flex items-center gap-2">
-                                                                                                                        <div className="bg-customBlue text-white px-2 py-0.5 rounded font-bold text-xs">
-                                                                                                                                {airportFrom.iata}
-                                                                                                                        </div>
-                                                                                                                        <div className="text-xs text-gray-700">{airportFrom.city}, {airportFrom.country}</div>
-                                                                                                                </div>
-                                                                                                        </div>
-                                                                                                ))}
-                                                                                        </div>
-                                                                                )}
-                                                                        </div>
-
-                                                                        {/* Swap Button - Mobile */}
-                                                                        <button
-                                                                                type="button"
-                                                                                onClick={() => {
-                                                                                        const temp = originAirport;
-                                                                                        setOriginAirport(destinationAirport);
-                                                                                        setDestinationAirport(temp);
-                                                                                }}
-                                                                                className="p-2 bg-white border-2 border-gray-200 rounded-full shadow-sm z-10"
-                                                                        >
-                                                                                <ArrowLeftRight size={20} className="text-customBlue" />
-                                                                        </button>
-
-                                                                        {/* Arrival Airport - Mobile */}
-                                                                        <div className="relative flex-1">
-                                                                                <div 
-                                                                                        onClick={() => {
-                                                                                                if (!editingDestination) {
-                                                                                                        setEditingDestination(true);
-                                                                                                        if (destinationAirport?.iata) {
-                                                                                                                setSearchToText(destinationAirport.iata);
-                                                                                                        }
-                                                                                                }
-                                                                                        }}
-                                                                                        className={`border-2 rounded-xl p-4 min-h-24 flex flex-col justify-center items-center transition cursor-text ${
-                                                                                                fieldErrors.destination
-                                                                                                        ? 'border-red-500 bg-red-50'
-                                                                                                        : editingDestination 
-                                                                                                                ? 'border-customBlue bg-white shadow-md' 
-                                                                                                                : 'border-gray-100 bg-white shadow-sm'
-                                                                                        }`}
-                                                                                >
-                                                                                        {editingDestination ? (
-                                                                                                <input
-                                                                                                        autoFocus
-                                                                                                        value={searchToText}
-                                                                                                        onChange={(e) => setSearchToText(e.target.value)}
-                                                                                                        onBlur={() => {
-                                                                                                                setTimeout(() => {
-                                                                                                                        if (!searchToText && !destinationAirport?.iata) {
-                                                                                                                                setEditingDestination(false);
-                                                                                                                        }
-                                                                                                                }, 200);
-                                                                                                        }}
-                                                                                                        placeholder="Search..."
-                                                                                                        className="text-lg font-medium bg-transparent focus:outline-none text-customBlue w-full text-center"
-                                                                                                        autoComplete="off"
-                                                                                                />
-                                                                                        ) : destinationAirport?.iata ? (
-                                                                                                <>
-                                                                                                        <div className="text-2xl font-bold text-customBlue">{destinationAirport.iata}</div>
-                                                                                                        <div className="text-xs text-gray-500 mt-1 text-center">{destinationAirport.city}</div>
-                                                                                                </>
-                                                                                        ) : (
-                                                                                                <>
-                                                                                                        <PlaneLanding size={32} className="text-customBlue mb-1" />
-                                                                                                        <span className="text-sm text-customBlue font-medium">Arriving in</span>
-                                                                                                </>
-                                                                                        )}
-                                                                                </div>
-                                                                                {editingDestination && airportsTo.length > 0 && (
-                                                                                        <div className="absolute z-50 top-full left-0 mt-1 w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
-                                                                                                {airportsTo?.map((airportTo: any) => (
-                                                                                                        <div
-                                                                                                                key={airportTo._id}
-                                                                                                                className="px-3 py-2 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0"
-                                                                                                                onClick={() => {
-                                                                                                                        setDestinationAirport(airportTo);
-                                                                                                                        setSearchToText("");
-                                                                                                                        setEditingDestination(false);
-                                                                                                                }}
-                                                                                                        >
-                                                                                                                <div className="flex items-center gap-2">
-                                                                                                                        <div className="bg-customBlue text-white px-2 py-0.5 rounded font-bold text-xs">
-                                                                                                                                {airportTo.iata}
-                                                                                                                        </div>
-                                                                                                                        <div className="text-xs text-gray-700">{airportTo.city}, {airportTo.country}</div>
-                                                                                                                </div>
-                                                                                                        </div>
-                                                                                                ))}
-                                                                                        </div>
-                                                                                )}
-                                                                        </div>
-                                                                </div>
-
-                                                                {/* Row 2: Trip Type - Mobile */}
-                                                                <div className="relative border-b border-gray-100 py-4">
+                                                        {/* Top Row: Trip Type & Passengers */}
+                                                        <div className="flex flex-col md:flex-row md:items-center justify-center gap-6 mb-6 pb-4 border-b border-gray-200">
+                                                                <div className="relative w-full md:w-auto">
                                                                         <button
                                                                                 type="button"
                                                                                 onClick={() => setShowTripTypeDropdown(!showTripTypeDropdown)}
-                                                                                className="w-full flex items-center gap-4"
+                                                                                className="w-full md:w-auto flex flex-row items-center justify-center gap-2 px-4 py-2 bg-customBlue text-white rounded-lg text-sm font-semibold focus:outline-none hover:bg-blue-700 transition cursor-pointer"
                                                                         >
-                                                                                <Plane size={24} className="text-customBlue" />
-                                                                                <div className="flex-1 text-left">
-                                                                                        <div className="text-xs text-gray-500">Trip type</div>
-                                                                                        <div className="text-base font-semibold text-gray-900">{tripType === "one-way" ? "One-Way" : "Round-Trip"}</div>
-                                                                                </div>
-                                                                                <ChevronDown size={20} className="text-gray-400" />
+                                                                                <span>{tripType === "one-way" ? "One-Way" : "Round-Trip"}</span>
+                                                                                <ChevronDown size={16} className="text-white" />
                                                                         </button>
                                                                         {showTripTypeDropdown && (
-                                                                                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                                                                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg py-2 w-full md:w-40 z-50">
                                                                                         <button
                                                                                                 type="button"
-                                                                                                onClick={() => { setTripType("one-way"); setShowTripTypeDropdown(false); }}
-                                                                                                className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${tripType === "one-way" ? "text-customBlue font-semibold bg-blue-50" : "text-gray-700"}`}
+                                                                                                onClick={() => {
+                                                                                                        setTripType("one-way");
+                                                                                                        setShowTripTypeDropdown(false);
+                                                                                                }}
+                                                                                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${tripType === "one-way" ? "text-customBlue font-semibold" : "text-gray-700"}`}
                                                                                         >
                                                                                                 One-Way
                                                                                         </button>
                                                                                         <button
                                                                                                 type="button"
-                                                                                                onClick={() => { setTripType("round-trip"); setShowTripTypeDropdown(false); }}
-                                                                                                className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${tripType === "round-trip" ? "text-customBlue font-semibold bg-blue-50" : "text-gray-700"}`}
+                                                                                                onClick={() => {
+                                                                                                        setTripType("round-trip");
+                                                                                                        setShowTripTypeDropdown(false);
+                                                                                                }}
+                                                                                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${tripType === "round-trip" ? "text-customBlue font-semibold" : "text-gray-700"}`}
                                                                                         >
                                                                                                 Round-Trip
                                                                                         </button>
                                                                                 </div>
                                                                         )}
                                                                 </div>
-
-                                                                {/* Row 3: Passengers - Mobile */}
-                                                                <div className="relative border-b border-gray-100 py-4">
+                                                                <div className="relative w-full md:w-auto">
                                                                         <button
                                                                                 type="button"
                                                                                 onClick={() => setShowPassengerDropdown(!showPassengerDropdown)}
-                                                                                className="w-full flex items-center gap-4"
+                                                                                className="w-full md:w-auto flex flex-row items-center justify-center gap-2 px-4 py-2 bg-customBlue text-white rounded-lg text-sm font-semibold focus:outline-none hover:bg-blue-700 transition cursor-pointer"
                                                                         >
-                                                                                <Users size={24} className="text-customBlue" />
-                                                                                <div className="flex-1 text-left">
-                                                                                        <div className="text-xs text-gray-500">Passenger(s)</div>
-                                                                                        <div className="text-base font-semibold text-gray-900">
-                                                                                                {adults} Adult{adults > 1 ? 's' : ''}{children > 0 ? `, ${children} Child${children > 1 ? 'ren' : ''}` : ''}
-                                                                                        </div>
-                                                                                </div>
-                                                                                <ChevronDown size={20} className="text-gray-400" />
+                                                                                <span>{adults + children} {adults + children === 1 ? "Passenger" : "Passengers"}</span>
+                                                                                <ChevronDown size={16} className="text-white" />
                                                                         </button>
                                                                         {showPassengerDropdown && (
-                                                                                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50">
+                                                                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 w-52 z-50">
+                                                                                        <div className="flex items-center justify-between mb-3">
+                                                                                                <span className="text-sm font-medium text-customBlue">Adults (16+)</span>
+                                                                                                <div className="flex items-center gap-2">
+                                                                                                        <button
+                                                                                                                type="button"
+                                                                                                                onClick={() => setAdults(Math.max(1, adults - 1))}
+                                                                                                                className="p-1 bg-gray-200 rounded hover:bg-gray-300"
+                                                                                                        >
+                                                                                                                <Minus size={16} className="text-customBlue" />
+                                                                                                        </button>
+                                                                                                        <span className="w-6 text-center text-sm font-semibold">{adults}</span>
+                                                                                                        <button
+                                                                                                                type="button"
+                                                                                                                onClick={() => setAdults(adults + 1)}
+                                                                                                                className="p-1 bg-customBlue rounded hover:bg-blue-700"
+                                                                                                        >
+                                                                                                                <Plus size={16} className="text-white" />
+                                                                                                        </button>
+                                                                                                </div>
+                                                                                        </div>
                                                                                         <div className="flex items-center justify-between mb-4">
-                                                                                                <span className="text-sm font-medium text-gray-700">Adults (16+)</span>
-                                                                                                <div className="flex items-center gap-3">
-                                                                                                        <button type="button" onClick={() => setAdults(Math.max(1, adults - 1))} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                                                                                <span className="text-sm font-medium text-customBlue">Children (2-15)</span>
+                                                                                                <div className="flex items-center gap-2">
+                                                                                                        <button
+                                                                                                                type="button"
+                                                                                                                onClick={() => setChildren(Math.max(0, children - 1))}
+                                                                                                                className="p-1 bg-gray-200 rounded hover:bg-gray-300"
+                                                                                                        >
                                                                                                                 <Minus size={16} className="text-customBlue" />
                                                                                                         </button>
-                                                                                                        <span className="w-6 text-center font-semibold">{adults}</span>
-                                                                                                        <button type="button" onClick={() => setAdults(adults + 1)} className="w-8 h-8 flex items-center justify-center bg-customBlue rounded-full">
+                                                                                                        <span className="w-6 text-center text-sm font-semibold">{children}</span>
+                                                                                                        <button
+                                                                                                                type="button"
+                                                                                                                onClick={() => setChildren(children + 1)}
+                                                                                                                className="p-1 bg-customBlue rounded hover:bg-blue-700"
+                                                                                                        >
                                                                                                                 <Plus size={16} className="text-white" />
                                                                                                         </button>
                                                                                                 </div>
                                                                                         </div>
-                                                                                        <div className="flex items-center justify-between">
-                                                                                                <span className="text-sm font-medium text-gray-700">Children (2-15)</span>
-                                                                                                <div className="flex items-center gap-3">
-                                                                                                        <button type="button" onClick={() => setChildren(Math.max(0, children - 1))} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                                                                                                                <Minus size={16} className="text-customBlue" />
-                                                                                                        </button>
-                                                                                                        <span className="w-6 text-center font-semibold">{children}</span>
-                                                                                                        <button type="button" onClick={() => setChildren(children + 1)} className="w-8 h-8 flex items-center justify-center bg-customBlue rounded-full">
-                                                                                                                <Plus size={16} className="text-white" />
-                                                                                                        </button>
-                                                                                                </div>
-                                                                                        </div>
-                                                                                </div>
-                                                                        )}
-                                                                </div>
-
-                                                                {/* Row 4: Dates - Mobile */}
-                                                                <div className="border-b border-gray-100 py-4">
-                                                                        <div className="flex items-center">
-                                                                                <CalendarIcon size={24} className="text-customBlue mr-4 flex-shrink-0" />
-                                                                                <div className="flex-1 flex">
-                                                                                        <button 
-                                                                                                type="button"
-                                                                                                onClick={() => setDepartureDateOpen(!departureDateOpen)}
-                                                                                                className={`flex-1 text-left pr-4 ${tripType === "round-trip" ? "border-r border-gray-200" : ""}`}
-                                                                                        >
-                                                                                                <div className="text-xs text-gray-500">Departure date</div>
-                                                                                                <div className={`text-base font-semibold ${date ? "text-gray-900" : "text-gray-400"}`}>
-                                                                                                        {date ? format(date, "MMM dd, yyyy") : "Select"}
-                                                                                                </div>
-                                                                                        </button>
-                                                                                        {tripType === "round-trip" && (
-                                                                                                <button 
+                                                                                        <div className="flex justify-end border-t border-gray-200 pt-3">
+                                                                                                <button
                                                                                                         type="button"
-                                                                                                        onClick={() => setReturnDateOpen(!returnDateOpen)}
-                                                                                                        className="flex-1 text-left pl-4"
+                                                                                                        onClick={() => setShowPassengerDropdown(false)}
+                                                                                                        className="text-customBlue text-sm font-semibold hover:underline"
                                                                                                 >
-                                                                                                        <div className="text-xs text-gray-500">Return date</div>
-                                                                                                        <div className={`text-base font-semibold ${returnDate ? "text-gray-900" : "text-gray-400"}`}>
-                                                                                                                {returnDate ? format(returnDate, "MMM dd, yyyy") : "Select"}
-                                                                                                        </div>
+                                                                                                        Close
                                                                                                 </button>
-                                                                                        )}
-                                                                                </div>
-                                                                        </div>
-                                                                        {/* Mobile Departure Calendar */}
-                                                                        {departureDateOpen && (
-                                                                                <div className="mt-3 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-                                                                                        <Calendar 
-                                                                                                mode="single" 
-                                                                                                selected={date} 
-                                                                                                onSelect={(selectedDate) => {
-                                                                                                        if (selectedDate) {
-                                                                                                                setDate(selectedDate);
-                                                                                                                setDepartureDateOpen(false);
-                                                                                                                if (tripType === "round-trip") {
-                                                                                                                        setReturnDateOpen(true);
-                                                                                                                }
-                                                                                                        }
-                                                                                                }}
-                                                                                                disabled={{ before: new Date() }} 
-                                                                                        />
+                                                                                        </div>
                                                                                 </div>
                                                                         )}
-                                                                        {/* Mobile Return Calendar */}
-                                                                        {tripType === "round-trip" && returnDateOpen && (
-                                                                                <div className="mt-3 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-                                                                                        <Calendar 
-                                                                                                mode="single" 
-                                                                                                selected={returnDate} 
-                                                                                                onSelect={(selectedDate) => {
-                                                                                                        if (selectedDate) {
-                                                                                                                setReturnDate(selectedDate);
-                                                                                                                setReturnDateOpen(false);
-                                                                                                        }
-                                                                                                }}
-                                                                                                disabled={{ before: date || new Date() }} 
-                                                                                        />
-                                                                                </div>
-                                                                        )}
-                                                                </div>
-
-                                                                {/* Row 5: Search Button - Mobile */}
-                                                                <div className="pt-6">
-                                                                        <button
-                                                                                type="submit"
-                                                                                disabled={isLoading}
-                                                                                className="w-full py-4 bg-customBlue text-white rounded-full font-semibold text-lg hover:bg-blue-700 transition disabled:opacity-50"
-                                                                        >
-                                                                                {isLoading ? "Searching..." : "Search"}
-                                                                        </button>
                                                                 </div>
                                                         </div>
 
-                                                        {/* ===== DESKTOP LAYOUT ===== */}
-                                                        <div className="hidden md:block">
-                                                                {/* Top Row: Trip Type & Passengers - Desktop */}
-                                                                <div className="flex flex-row items-center justify-center gap-6 mb-6 pb-4 border-b border-gray-200">
-                                                                        <div className="relative">
-                                                                                <button
-                                                                                        type="button"
-                                                                                        onClick={() => setShowTripTypeDropdown(!showTripTypeDropdown)}
-                                                                                        className="flex flex-row items-center justify-center gap-2 px-4 py-2 bg-customBlue text-white rounded-lg text-sm font-semibold focus:outline-none hover:bg-blue-700 transition cursor-pointer"
-                                                                                >
-                                                                                        <span>{tripType === "one-way" ? "One-Way" : "Round-Trip"}</span>
-                                                                                        <ChevronDown size={16} className="text-white" />
-                                                                                </button>
-                                                                                {showTripTypeDropdown && (
-                                                                                        <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg py-2 w-40 z-50">
-                                                                                                <button
-                                                                                                        type="button"
-                                                                                                        onClick={() => { setTripType("one-way"); setShowTripTypeDropdown(false); }}
-                                                                                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${tripType === "one-way" ? "text-customBlue font-semibold" : "text-gray-700"}`}
-                                                                                                >
-                                                                                                        One-Way
-                                                                                                </button>
-                                                                                                <button
-                                                                                                        type="button"
-                                                                                                        onClick={() => { setTripType("round-trip"); setShowTripTypeDropdown(false); }}
-                                                                                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${tripType === "round-trip" ? "text-customBlue font-semibold" : "text-gray-700"}`}
-                                                                                                >
-                                                                                                        Round-Trip
-                                                                                                </button>
-                                                                                        </div>
-                                                                                )}
-                                                                        </div>
-                                                                        <div className="relative">
-                                                                                <button
-                                                                                        type="button"
-                                                                                        onClick={() => setShowPassengerDropdown(!showPassengerDropdown)}
-                                                                                        className="flex flex-row items-center justify-center gap-2 px-4 py-2 bg-customBlue text-white rounded-lg text-sm font-semibold focus:outline-none hover:bg-blue-700 transition cursor-pointer"
-                                                                                >
-                                                                                        <span>{adults + children} {adults + children === 1 ? "Passenger" : "Passengers"}</span>
-                                                                                        <ChevronDown size={16} className="text-white" />
-                                                                                </button>
-                                                                                {showPassengerDropdown && (
-                                                                                        <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 w-52 z-50">
-                                                                                                <div className="flex items-center justify-between mb-3">
-                                                                                                        <span className="text-sm font-medium text-customBlue">Adults (16+)</span>
-                                                                                                        <div className="flex items-center gap-2">
-                                                                                                                <button type="button" onClick={() => setAdults(Math.max(1, adults - 1))} className="p-1 bg-gray-200 rounded hover:bg-gray-300">
-                                                                                                                        <Minus size={16} className="text-customBlue" />
-                                                                                                                </button>
-                                                                                                                <span className="w-6 text-center text-sm font-semibold">{adults}</span>
-                                                                                                                <button type="button" onClick={() => setAdults(adults + 1)} className="p-1 bg-customBlue rounded hover:bg-blue-700">
-                                                                                                                        <Plus size={16} className="text-white" />
-                                                                                                                </button>
-                                                                                                        </div>
-                                                                                                </div>
-                                                                                                <div className="flex items-center justify-between mb-4">
-                                                                                                        <span className="text-sm font-medium text-customBlue">Children (2-15)</span>
-                                                                                                        <div className="flex items-center gap-2">
-                                                                                                                <button type="button" onClick={() => setChildren(Math.max(0, children - 1))} className="p-1 bg-gray-200 rounded hover:bg-gray-300">
-                                                                                                                        <Minus size={16} className="text-customBlue" />
-                                                                                                                </button>
-                                                                                                                <span className="w-6 text-center text-sm font-semibold">{children}</span>
-                                                                                                                <button type="button" onClick={() => setChildren(children + 1)} className="p-1 bg-customBlue rounded hover:bg-blue-700">
-                                                                                                                        <Plus size={16} className="text-white" />
-                                                                                                                </button>
-                                                                                                        </div>
-                                                                                                </div>
-                                                                                                <div className="flex justify-end border-t border-gray-200 pt-3">
-                                                                                                        <button type="button" onClick={() => setShowPassengerDropdown(false)} className="text-customBlue text-sm font-semibold hover:underline">
-                                                                                                                Close
-                                                                                                        </button>
-                                                                                                </div>
-                                                                                        </div>
-                                                                                )}
-                                                                        </div>
-                                                                </div>
-
-                                                                {/* Main Search Row - Desktop */}
-                                                                <div className="flex flex-row gap-2 items-center">
+                                                        {/* Main Search Row - Responsive Layout */}
+                                                        <div className="flex flex-col gap-4 md:flex-row md:gap-2 md:items-center">
                                                                 {/* Departure Airport */}
                                                                 <div className="relative w-full md:w-[300px]">
                                                                         <div 
@@ -1251,7 +957,6 @@ const BookFlight = () => {
                                                                                 {isLoading ? "Searching..." : "Search"}
                                                                         </button>
                                                                 </div>
-                                                        </div>
                                                         </div>
 
                                                         {/* Booking Inquiry Modal */}
