@@ -841,44 +841,69 @@ const BookFlight = () => {
                                                                 </div>
 
                                                                 {/* Row 4: Dates - Mobile */}
-                                                                <div className="flex items-center border-b border-gray-100 py-4">
-                                                                        <CalendarIcon size={24} className="text-customBlue mr-4 flex-shrink-0" />
-                                                                        <div className="flex-1 flex">
-                                                                                <Popover open={departureDateOpen} onOpenChange={setDepartureDateOpen}>
-                                                                                        <PopoverTrigger asChild>
+                                                                <div className="border-b border-gray-100 py-4">
+                                                                        <div className="flex items-center">
+                                                                                <CalendarIcon size={24} className="text-customBlue mr-4 flex-shrink-0" />
+                                                                                <div className="flex-1 flex">
+                                                                                        <button 
+                                                                                                type="button"
+                                                                                                onClick={() => setDepartureDateOpen(!departureDateOpen)}
+                                                                                                className={`flex-1 text-left pr-4 ${tripType === "round-trip" ? "border-r border-gray-200" : ""}`}
+                                                                                        >
+                                                                                                <div className="text-xs text-gray-500">Departure date</div>
+                                                                                                <div className={`text-base font-semibold ${date ? "text-gray-900" : "text-gray-400"}`}>
+                                                                                                        {date ? format(date, "MMM dd, yyyy") : "Select"}
+                                                                                                </div>
+                                                                                        </button>
+                                                                                        {tripType === "round-trip" && (
                                                                                                 <button 
                                                                                                         type="button"
-                                                                                                        className={`flex-1 text-left pr-4 ${tripType === "round-trip" ? "border-r border-gray-200" : ""}`}
+                                                                                                        onClick={() => setReturnDateOpen(!returnDateOpen)}
+                                                                                                        className="flex-1 text-left pl-4"
                                                                                                 >
-                                                                                                        <div className="text-xs text-gray-500">Departure date</div>
-                                                                                                        <div className={`text-base font-semibold ${date ? "text-gray-900" : "text-gray-400"}`}>
-                                                                                                                {date ? format(date, "MMM dd, yyyy") : "Select"}
+                                                                                                        <div className="text-xs text-gray-500">Return date</div>
+                                                                                                        <div className={`text-base font-semibold ${returnDate ? "text-gray-900" : "text-gray-400"}`}>
+                                                                                                                {returnDate ? format(returnDate, "MMM dd, yyyy") : "Select"}
                                                                                                         </div>
                                                                                                 </button>
-                                                                                        </PopoverTrigger>
-                                                                                        <PopoverContent className="w-auto p-0 z-50">
-                                                                                                <Calendar mode="single" selected={date} onSelect={handleDateSelect} disabled={{ before: new Date() }} initialFocus />
-                                                                                        </PopoverContent>
-                                                                                </Popover>
-                                                                                {tripType === "round-trip" && (
-                                                                                        <Popover open={returnDateOpen} onOpenChange={setReturnDateOpen}>
-                                                                                                <PopoverTrigger asChild>
-                                                                                                        <button 
-                                                                                                                type="button"
-                                                                                                                className="flex-1 text-left pl-4"
-                                                                                                        >
-                                                                                                                <div className="text-xs text-gray-500">Return date</div>
-                                                                                                                <div className={`text-base font-semibold ${returnDate ? "text-gray-900" : "text-gray-400"}`}>
-                                                                                                                        {returnDate ? format(returnDate, "MMM dd, yyyy") : "Select"}
-                                                                                                                </div>
-                                                                                                        </button>
-                                                                                                </PopoverTrigger>
-                                                                                                <PopoverContent className="w-auto p-0 z-50">
-                                                                                                        <Calendar mode="single" selected={returnDate} onSelect={handleReturnDateSelectWithClose} disabled={{ before: date || new Date() }} initialFocus />
-                                                                                                </PopoverContent>
-                                                                                        </Popover>
-                                                                                )}
+                                                                                        )}
+                                                                                </div>
                                                                         </div>
+                                                                        {/* Mobile Departure Calendar */}
+                                                                        {departureDateOpen && (
+                                                                                <div className="mt-3 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
+                                                                                        <Calendar 
+                                                                                                mode="single" 
+                                                                                                selected={date} 
+                                                                                                onSelect={(selectedDate) => {
+                                                                                                        if (selectedDate) {
+                                                                                                                setDate(selectedDate);
+                                                                                                                setDepartureDateOpen(false);
+                                                                                                                if (tripType === "round-trip") {
+                                                                                                                        setReturnDateOpen(true);
+                                                                                                                }
+                                                                                                        }
+                                                                                                }}
+                                                                                                disabled={{ before: new Date() }} 
+                                                                                        />
+                                                                                </div>
+                                                                        )}
+                                                                        {/* Mobile Return Calendar */}
+                                                                        {tripType === "round-trip" && returnDateOpen && (
+                                                                                <div className="mt-3 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
+                                                                                        <Calendar 
+                                                                                                mode="single" 
+                                                                                                selected={returnDate} 
+                                                                                                onSelect={(selectedDate) => {
+                                                                                                        if (selectedDate) {
+                                                                                                                setReturnDate(selectedDate);
+                                                                                                                setReturnDateOpen(false);
+                                                                                                        }
+                                                                                                }}
+                                                                                                disabled={{ before: date || new Date() }} 
+                                                                                        />
+                                                                                </div>
+                                                                        )}
                                                                 </div>
 
                                                                 {/* Row 5: Search Button - Mobile */}
