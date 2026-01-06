@@ -73,7 +73,7 @@ const travelPackages: TravelPackage[] = [
         description: "Shopping, luxury, and desert adventures",
         originalPrice: "₦900k",
         price: "₦750,000",
-        image: "https://images.unsplash.com/photo-1512453979798-5ea904ac6605?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         inclusions: [
             { icon: "plane", text: "Direct Flights" },
             { icon: "building", text: "4-Star Downtown Hotel" },
@@ -163,6 +163,7 @@ export default function TravelPackagesPage() {
         fullName: "",
         email: "",
         phone: "",
+        numberOfTravellers: "1",
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -174,7 +175,7 @@ export default function TravelPackagesPage() {
     const closeModal = () => {
         setShowModal(false);
         setSelectedPackage(null);
-        setFormData({ fullName: "", email: "", phone: "" });
+        setFormData({ fullName: "", email: "", phone: "", numberOfTravellers: "1" });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -194,6 +195,7 @@ export default function TravelPackagesPage() {
                     customerName: formData.fullName,
                     customerEmail: formData.email,
                     customerPhone: formData.phone,
+                    numberOfTravellers: formData.numberOfTravellers,
                     packageName: selectedPackage.name,
                     destination: selectedPackage.destination,
                     duration: selectedPackage.duration,
@@ -281,7 +283,7 @@ export default function TravelPackagesPage() {
                                                 : "border-2 border-customBlue text-customBlue hover:bg-customBlue hover:text-white"
                                         }`}
                                     >
-                                        {pkg.buttonStyle === "filled" ? "Reserve Spot" : "Get Quote"}
+                                        Reserve Spot
                                     </button>
                                 </div>
                             </div>
@@ -453,6 +455,19 @@ export default function TravelPackagesPage() {
                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                 className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500"
                                 placeholder="+234..."
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Number of Travellers *</label>
+                            <input 
+                                type="number" 
+                                required
+                                min="1"
+                                max="50"
+                                value={formData.numberOfTravellers}
+                                onChange={(e) => setFormData({ ...formData, numberOfTravellers: e.target.value })}
+                                className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500"
+                                placeholder="1"
                             />
                         </div>
                         

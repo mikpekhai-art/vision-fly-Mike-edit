@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
             customerName,
             customerEmail,
             customerPhone,
+            numberOfTravellers,
             packageName,
             destination,
             duration,
@@ -56,6 +57,7 @@ export async function POST(request: NextRequest) {
             <p><span class="label">Name:</span> ${customerName}</p>
             <p><span class="label">Email:</span> ${customerEmail}</p>
             <p><span class="label">Phone:</span> ${customerPhone || "Not provided"}</p>
+            <p><span class="label">Number of Travellers:</span> ${numberOfTravellers || "1"}</p>
             
             <p style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px;">
                 <strong>⏰ Action Required:</strong> Please contact this customer within 2 hours to discuss their travel package inquiry.
