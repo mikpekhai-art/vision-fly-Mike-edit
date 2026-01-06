@@ -10,6 +10,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import Navbar from "@/components/landing-page/Navbar";
+import Footer from "@/components/landing-page/Footer";
 
 interface TravelPackage {
     id: string;
@@ -219,6 +221,7 @@ export default function TravelPackagesPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <Navbar />
             <section className="pt-32 pb-20 bg-gray-50">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
@@ -485,6 +488,7 @@ export default function TravelPackagesPage() {
                     </form>
                 </DialogContent>
             </Dialog>
+            <Footer />
         </div>
     );
 }
