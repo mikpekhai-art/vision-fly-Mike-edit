@@ -1,265 +1,41 @@
 # Vision Fly - Private Jet Charter Booking Website
 
-## Project Overview
-Vision Fly is a modern, Air Canada-inspired private jet charter booking website built with Next.js. The platform features flight search, private charter inquiry, and empty leg subscriptions with a horizontal search layout and full mobile responsiveness.
+## Overview
+Vision Fly is a modern private jet charter booking website, inspired by Air Canada's UI/UX, built with Next.js. Its primary purpose is to offer a seamless platform for flight search, private charter inquiries, and empty leg subscriptions. The project aims to provide a luxurious and efficient booking experience with a focus on real-time information and personalized services, catering to the high-end travel market. Key capabilities include dynamic flight search with Amadeus API integration, comprehensive private charter booking, curated travel packages, and an empty leg subscription service, all designed with a horizontal search layout and full mobile responsiveness.
 
-## Current Status
-✅ **COMPLETE** - All MVP features implemented and compiled successfully
+## User Preferences
+I prefer iterative development with clear communication at each step. Please ask for confirmation before making significant architectural changes or adding new external dependencies. I value concise explanations but appreciate detailed breakdowns when complexity is high. Do not change the overall Air Canada-inspired design aesthetic. Ensure all user-facing text is professional and aligns with a luxury brand image. All forms should have robust validation and provide clear user feedback.
 
-## Key Features Implemented
+## System Architecture
+The application is built on **Next.js 14.2.5**, leveraging **Tailwind CSS** and **Emotion** for styling, and **Radix UI** for accessible UI components (Dialog, Popover, Select, Tabs). **React Hook Form** with **Zod** is used for form management and validation, while **date-fns**, **dayjs**, and **react-day-picker** handle date logic. **Lucide React** provides icons, and **React Hot Toast** is used for notifications.
 
-### 1. Flight Search Component (BookFlight.tsx)
-- **Horizontal white card layout** with airport code displays
-- **Trip type selector** (One-way / Round-trip with conditional rendering)
-- **Unified date picker system**:
-  - One-way trips: Single departure date
-  - Round-trip: Departure + Return date pickers
-- **Passenger counter** with +/- controls (adults & children)
-- **Swap button** (shows ArrowRight for one-way, ArrowLeftRight for round-trip)
-- **Live Flight Search with Amadeus API**:
-  - Real-time flight pricing from Amadeus Flight Offers API
-  - Displays flight cards with price, duration, stops, and carrier info
-  - "Book This Flight" button on each result opens booking modal with flight details
-  - "Request Custom Quote" option for users who prefer personalized assistance
-  - Graceful fallback to custom quote when API unavailable
-- **Booking inquiry modal** that triggers on search submit with:
-  - Dynamic passenger name inputs based on total count
-  - Selected flight details displayed when booking specific flight
-  - Email and phone fields
-  - Success message
+**UI/UX Design:**
+- **Air Canada-inspired aesthetic:** Features large airport code displays, clean white card layouts, and a sophisticated color palette (e.g., customBlue #065777).
+- **Horizontal search layout** for desktop, dynamically adapting to a **vertical stack layout on mobile** with full responsiveness.
+- **Unified styling** across interactive elements like dropdowns and buttons for visual consistency.
+- **Rich autocomplete dropdowns** for airport selection, displaying IATA codes, city, country, and full airport names with clear visual hierarchy.
+- **Empty state icons** (PlaneTakeoff, PlaneLanding) and "Click to change" hints for improved user guidance in airport selection fields.
+- **Modal dialogs** (Radix UI) are used for booking inquiries, charter requests, and travel package inquiries to maintain focus and gather detailed information.
 
-### 2. Private Charter Page (private-charter/page.tsx)
-- **Redesigned to match BookFlight style** with Air Canada-inspired UI
-- **Hero Section**: "Your Schedule, Your Rules." headline with luxury subheadline
-- **Search Card Interface**:
-  - Airport autocomplete for origin/destination (same GitHub API as BookFlight)
-  - Date picker with calendar
-  - Passengers dropdown (1-16 passengers)
-  - "Request Charter" CTA button
-- **Charter Request Modal** ("Customize Your Private Journey"):
-  - Full Name, Email, Phone fields
-  - "Additional Travel Needs" textarea with placeholder for catering, pets, aircraft preference
-  - "Receive Quote" submit button
-  - Trust message: "Our charter team will send a bespoke quote within 2 hours"
-- **Nodemailer Integration**: Uses server-side API route for dual-email system (admin + user confirmation)
+**Technical Implementations:**
+- **Flight Search:** Features a dynamic flight search component (`BookFlight.tsx`) with conditional rendering for trip types (one-way/round-trip), passenger counters, and a unified date picker system. It integrates with the **Amadeus Flight Offers API** for real-time pricing, with a fallback to custom quote requests.
+- **Private Charter:** A dedicated page (`private-charter/page.tsx`) mirrors the BookFlight component's UI, offering a robust charter request system with airport autocomplete, date selection, passenger manifests, and a specialized inquiry modal.
+- **Travel Packages:** (`travel-packages/page.tsx`) presents 6 curated travel packages with visual cards, filtering options, and an inquiry modal for bookings or custom trip requests.
+- **Empty Leg Subscription:** (`empty-leg/page.tsx`) includes an enhanced subscription modal with consent management and dynamic date generation.
+- **Programmatic SEO:** Dynamic route pages (`app/routes/[slug]/page.tsx`) are generated from `lib/routesData.ts` for popular Nigerian routes, featuring SEO-optimized descriptions and internal linking from the footer.
+- **Dual-Email System:** All forms (Contact, Private Charter, Booking, Empty Leg, Travel Packages) utilize **Nodemailer** via server-side API routes (`app/api/.../route.ts`) to send dual emails: an internal notification to `process.env.GMAIL_USER` and a branded confirmation email to the user. This replaces client-side EmailJS for these functionalities.
+- **State Management:** Local React state is extensively used within components like `BookFlight.tsx` for managing UI interactions and form data.
+- **Airport Data:** Airport search functionalities utilize a client-side filtered dataset from `https://raw.githubusercontent.com/mwgg/Airports/master/airports.json`.
 
-### 3. Empty Leg Subscription (empty-leg/page.tsx)
-- Enhanced subscription modal with:
-  - Full Name input field
-  - Email input field
-  - **Consent checkbox** (must be checked to enable Subscribe button)
-  - Clear consent message about mailing list
-- Form validation and reset on successful subscription
-- **Dynamic date generation**: Flight dates calculated relative to current date (today, tomorrow, +3 days, etc.)
-- **Nodemailer Integration**: All forms now use server-side API routes for dual-email system
+**System Design Choices:**
+- **Mobile-first responsive design** ensuring optimal user experience across all devices.
+- **Component-based architecture** with clear separation of concerns (e.g., `landing-page` components).
+- **Robust form validation** using React Hook Form and Zod schemas.
+- **Toast notifications** for user feedback on actions.
+- **Server-side API routes** for handling all email communications for enhanced security and reliability.
 
-### 4. Mobile Responsiveness
-- Vertical stack layout on mobile devices
-- Horizontal layout on desktop (md breakpoint)
-- Full-width inputs on mobile, auto-width on desktop
-- Responsive font sizes and spacing
-
-## Technical Stack
-- **Framework**: Next.js 14.2.5
-- **Styling**: Tailwind CSS + Emotion
-- **UI Components**: Radix UI (Dialog, Popover, Select, Tabs)
-- **Form Management**: React Hook Form + Zod validation
-- **Date Handling**: date-fns, dayjs, react-day-picker
-- **Icons**: Lucide React
-- **Notifications**: React Hot Toast
-- **Email**: Nodemailer (server-side) - All forms use unified dual-email system
-
-## File Structure
-```
-src/
-├── app/
-│   ├── page.tsx (Home/Landing page)
-│   ├── private-charter/page.tsx
-│   ├── empty-leg/page.tsx
-│   └── api/
-│       ├── booking/route.ts (Booking inquiry email handler)
-│       ├── contact/route.ts (Contact form email handler)
-│       ├── empty-leg/route.ts (Empty leg inquiry email handler)
-│       ├── subscribe/route.ts (Mailing list subscription handler)
-│       └── private-charter/route.ts (Charter request email handler)
-├── components/
-│   └── landing-page/
-│       ├── BookFlight.tsx (Main search component)
-│       ├── ContactUs.tsx (Contact form with API integration)
-│       └── [other components]
-├── lib/
-│   └── utils.ts
-└── styles/
-    └── globals.css
-```
-
-## State Management
-**BookFlight.tsx** uses local React state for:
-- `tripType`: "one-way" | "round-trip"
-- `adults`, `children`: Passenger counts
-- `date`, `returnDate`: Selected dates
-- `originAirport`, `destinationAirport`: Airport selections
-- `showBookingModal`: Modal visibility
-- `passengerNames`: Array of passenger names
-- `bookingEmail`, `bookingPhone`: Contact info
-
-## Design Patterns
-- **Air Canada-inspired**: Large airport code displays, clean white cards
-- **Responsive grid**: Flexbox with mobile-first breakpoints
-- **Modal dialogs**: Radix UI for accessibility
-- **Form validation**: React Hook Form with Zod schemas
-- **Toast notifications**: User feedback on actions
-
-## Recent Changes (Turn 5)
-- ✅ Fixed duplicate `returnDate` variable by renaming round-trip version to `roundTripReturnDate`
-- ✅ Added booking inquiry modal with passenger name inputs
-- ✅ Implemented conditional return date picker (shows only for round-trip)
-- ✅ Updated swap button icon logic (ArrowRight vs ArrowLeftRight)
-- ✅ Added mobile responsive classes to search layout
-- ✅ Enhanced Private Charter with Special Requests field
-- ✅ Enhanced Empty Leg with Full Name and consent checkbox
-- ✅ Added button disabled state when consent not checked
-
-## Recent Changes (Turn 6 - Visual & UX Refinements)
-- ✅ **Removed obsolete buttons**: Deleted 'One Way' and 'Round Trip' toggle buttons from top of search card
-- ✅ **Unified dropdown styling**: 
-  - Trip Type dropdown now uses customBlue (#065777) background with white text
-  - Passenger button styled to match with customBlue background, white text, rounded corners
-  - Both components are now visually consistent primary interactive elements
-- ✅ **Enabled input editing**: 
-  - Airport fields (Departing from / Arriving in) now fully editable
-  - Selected airports display with "Click to change" hint
-  - Clicking on selected airport clears it and allows new search
-  - User can type/backspace/delete freely in input mode
-- ✅ **Preserved state management**:
-  - Trip Type dropdown still correctly toggles Return Date visibility
-  - One-way trips: Show only Departure date
-  - Round-trip: Show both Departure and Return dates
-- ✅ **Mobile responsive layout**: Top row (Trip Type & Passengers) now stacks on mobile with gap adjustments
-
-## Recent Changes (Turn 7 - Air Canada UX Redesign with GitHub Airports API)
-- ✅ **GitHub Airports API**: Refactored fetchAirports to use https://raw.githubusercontent.com/mwgg/Airports/master/airports.json instead of OpenPoint API
-- ✅ **Client-side filtering**: Implemented filterAirports function that searches across IATA code, city, country, and airport name
-- ✅ **Empty state icons**: 
-  - Departure field displays large PlaneTakeoff icon (light gray) when empty
-  - Arrival field displays large PlaneLanding icon (light gray) when empty
-- ✅ **Selected state (Big Code Display)**:
-  - Shows 3-letter airport code in large (text-4xl) bold blue text
-  - Displays city and country underneath in smaller text
-  - Shows "Click to change" hint with clickable interaction
-  - Clicking reverts to edit mode with pre-filled text for easy modification
-- ✅ **Rich autocomplete dropdown** with three-level hierarchy:
-  - Left: Blue badge with 3-letter IATA code (bold, white text on customBlue background)
-  - Right (Top): City, Country (e.g., "Lagos, Nigeria") in bold text
-  - Right (Bottom): Full airport name in smaller gray text (e.g., "Murtala Muhammed International Airport")
-  - Clean separation with hover effects on blue background
-- ✅ **Mobile responsiveness**:
-  - Airport input boxes stack vertically on mobile
-  - All elements (Trip Type, Passengers, Dates) stack below airports for seamless mobile UX
-  - Larger touch targets for mobile usability (p-6, min-h-28)
-- ✅ **Vertical layout**: Changed from horizontal md:flex-row to flex-col for proper mobile-first stacking
-
-## Recent Changes (Turn 8 - Private Charter Redesign & Bug Fixes)
-- ✅ **Completely redesigned Private Charter page** to match BookFlight component:
-  - Added One-Way/Round-Trip toggle dropdown
-  - Added passenger counter with +/- controls for Adults and Children
-  - PlaneTakeoff icon for departure field when empty
-  - PlaneLanding icon for arrival field when empty
-  - Large 3-letter IATA code display when airport selected
-  - "Click to change" hint on selected airports
-  - Blue badge autocomplete dropdown with city, country, and airport name
-  - Swap button (ArrowRight for one-way, ArrowLeftRight for round-trip)
-  - Conditional Return Date picker (only shows for round-trip)
-  - Uses same GitHub Airports API as BookFlight
-- ✅ **Fixed duplicate button text bug** on Empty Leg page:
-  - Removed duplicate "Send Inquiry" text from hero CTA button
-  - Removed duplicate "Send Inquiry" text from Subscribe button
-  - Removed duplicate "Send Inquiry" text from mobile flight cards
-  - All buttons now display correctly on both mobile and desktop
-- ✅ **Mobile responsive button text**: Request Charter button shows "Request" on mobile
-
-## Recent Changes (Turn 9 - EmailJS Multiple Passenger Support)
-- ✅ **Updated EmailJS template variables** for both BookFlight and Private Charter:
-  - `contact_name`: Main contact's full name (first passenger in BookFlight, form fullName in Charter)
-  - `contact_email`: Main contact's email address
-  - `contact_phone`: Main contact's phone number
-  - `passenger_count`: Total number of passengers (adults + children)
-  - `passenger_list`: Newline-separated list of ALL passenger names for Passenger Manifest
-- ✅ **Added Passenger Manifest to Private Charter modal**:
-  - Dynamically generates input fields based on passenger count
-  - Each passenger gets their own named input field
-  - Validation ensures all passenger names are filled before submission
-  - Clear labeling with "Passenger Manifest *" section
-- ✅ **Unified template structure**: Both BookFlight and Private Charter now use consistent variable naming
-
-## Recent Changes (Turn 12 - Request Quote Auto-Fill Integration)
-- ✅ **Updated Route Page Buttons**:
-  - "Request Quote" button now links to /private-charter with query params
-  - Passes origin, originCode, destination, destinationCode in URL
-  - "Request Quote Now" CTA section also updated with same linking
-- ✅ **Private Charter URL Param Reading**:
-  - Added useSearchParams hook to read URL parameters
-  - Wrapped component in Suspense boundary for Next.js compliance
-  - Auto-fills origin and destination airports from URL params
-  - Uses paramsApplied state to prevent re-applying on re-renders
-- ✅ **Seamless User Flow**:
-  - User clicks "Request Quote" on any route page (e.g., Lagos to Abuja)
-  - Redirected to Private Charter with origin/destination pre-filled
-  - User only needs to select date, passengers, and submit
-
-## Recent Changes (Turn 11 - Programmatic SEO for Nigerian Routes)
-- ✅ **Routes Data Source** (`lib/routesData.ts`):
-  - 12 popular Nigerian flight routes with SEO-optimized descriptions
-  - Each route includes: slug, origin/destination, price, duration, description
-  - Helper functions: getRouteBySlug(), getAllRouteSlugs()
-- ✅ **Dynamic Route Pages** (`app/routes/[slug]/page.tsx`):
-  - Professional landing page design with hero section and pricing
-  - SEO metadata via generateMetadata in layout.tsx
-  - Route details, contact info, and related routes sidebar
-  - Call-to-action buttons linking to contact/quote forms
-  - 404 not-found page for invalid slugs
-- ✅ **Footer Internal Linking**:
-  - "Popular Nigerian Routes" section with links to all route pages
-  - Grid layout with 10 route links for SEO crawlability
-  - Copyright section with navigation links
-
-## Recent Changes (Turn 10 - Dual Email System with Nodemailer)
-- ✅ **Contact Form API Route** (`/api/contact/route.ts`):
-  - Sends dual emails on form submission
-  - Email 1 (Admin): Full inquiry details to `process.env.GMAIL_USER`
-  - Email 2 (User): Confirmation with Vision Fly branding
-- ✅ **Private Charter API Route** (`/api/private-charter/route.ts`):
-  - New server-side route replacing client-side EmailJS
-  - Sends dual emails (admin notification + user confirmation)
-  - Includes passenger manifest, trip details, and notes
-- ✅ **Booking Inquiry API Route** (`/api/booking/route.ts`):
-  - New server-side route for BookFlight component
-  - Sends dual emails (admin notification + user confirmation)
-  - Includes flight details and passenger manifest
-- ✅ **User Confirmation Email Template**:
-  - Subject: "We received your request - Vision Fly"
-  - Body: Thank you message with flight operations scanning notification
-  - Same template used for Contact, Private Charter, and Booking
-- ✅ **Error Handling**: User confirmation email failure doesn't block admin email
-- ✅ **Removed EmailJS dependency** from Private Charter and BookFlight (now uses fetch to API)
-
-## TypeScript Status
-✅ All code compiles successfully (minor type assertions for filtered airports)
-✅ All components render correctly with Fast Refresh enabled
-✅ GitHub API data populates airport details with rich information
-
-## Next Steps (If Needed)
-- Backend API integration for flight search
-- Payment processing integration
-- User authentication system
-- Admin dashboard for managing flights
-- Database integration for storing inquiries
-
-## Running the Project
-```bash
-npm run dev
-```
-Server runs on: http://0.0.0.0:5000
-
-## Deployment
-Project is ready for Replit publishing with production-optimized Next.js server.
+## External Dependencies
+- **Amadeus Flight Offers API:** Used for real-time flight pricing and availability in the flight search component.
+- **GitHub Airports API:** `https://raw.githubusercontent.com/mwgg/Airports/master/airports.json` provides airport data for autocomplete features.
+- **Nodemailer:** Utilized for server-side email sending, handling all admin notifications and user confirmations.
+- **Google Maps API (implicit/future):** Although not explicitly detailed as integrated, the project envisions geographical data interaction for routes and locations.

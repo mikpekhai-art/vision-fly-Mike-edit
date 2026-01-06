@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exclusive Vacation Deals | VisionFly</title>
+    <meta name="description" content="All-inclusive honeymoons, family holidays, and luxury getaways. Book your dream vacation with VisionFly.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vision: {
+                            dark: '#0f172a',  // Slate 900
+                            blue: '#1e293b',  // Slate 800
+                            gold: '#f59e0b',  // Amber 500
+                            lightGold: '#fcd34d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Smooth Scrolling */
+        html { scroll-behavior: smooth; }
+        
+        /* Hero Pattern Overlay */
+        .hero-bg {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.6)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Card Hover Effects */
+        .deal-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .deal-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+
+        /* Custom Scrollbar for Modal */
+        .modal-scroll::-webkit-scrollbar { width: 8px; }
+        .modal-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .modal-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <!-- Navbar -->
+    <nav class="bg-vision-dark text-white fixed w-full z-50 shadow-lg transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <!-- Logo -->
+            <a href="/" class="text-2xl font-heading font-extrabold tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-paper-plane text-vision-gold"></i>
+                VISION<span class="text-vision-gold">FLY</span>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8 font-medium text-sm">
+                <a href="/" class="hover:text-vision-gold transition">Home</a>
+                <a href="#featured-deals" class="hover:text-vision-gold transition">Packages</a>
+                <a href="#custom-plan" class="hover:text-vision-gold transition">Custom Trip</a>
+                <a href="tel:+2348000000000" class="bg-vision-gold text-vision-dark px-5 py-2 rounded-full font-bold hover:bg-white transition shadow-md">
+                    <i class="fa-solid fa-phone mr-2"></i> Call to Book
+                </a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden text-2xl text-vision-gold" onclick="toggleMobileMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-vision-blue border-t border-gray-700">
+            <div class="flex flex-col p-4 space-y-4">
+                <a href="/" class="block hover:text-vision-gold">Home</a>
+                <a href="#featured-deals" class="block hover:text-vision-gold">Hot Deals</a>
+                <a href="#custom-plan" class="block hover:text-vision-gold">Custom Plan</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 1. Featured Deals Section (Now First) -->
+    <!-- Added pt-32 to account for fixed navbar covering top content -->
+    <section id="featured-deals" class="pt-32 pb-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-vision-dark mb-4">Trending Getaways</h2>
+                <div class="h-1 w-24 bg-vision-gold mx-auto rounded"></div>
+            </div>
+
+            <!-- Filter Buttons (Visual Only for MVP) -->
+            <div class="flex justify-center gap-4 mb-12 flex-wrap">
+                <button class="px-6 py-2 bg-vision-dark text-white rounded-full text-sm font-semibold shadow-lg">All Deals</button>
+                <button class="px-6 py-2 bg-white text-gray-600 hover:bg-gray-100 rounded-full text-sm font-semibold border border-gray-200">Honeymoon</button>
+                <button class="px-6 py-2 bg-white text-gray-600 hover:bg-gray-100 rounded-full text-sm font-semibold border border-gray-200">Visa-Free</button>
+                <button class="px-6 py-2 bg-white text-gray-600 hover:bg-gray-100 rounded-full text-sm font-semibold border border-gray-200">European Summer</button>
+            </div>
+
+            <!-- Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Card 1: Zanzibar -->
+                <div class="deal-card bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 flex flex-col h-full">
+                    <div class="relative h-64">
+                        <img src="https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Zanzibar" class="w-full h-full object-cover">
+                        <div class="absolute top-4 right-4 bg-vision-gold text-vision-dark font-bold px-3 py-1 rounded text-xs shadow-md">POPULAR</div>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-heading font-bold text-xl text-vision-dark">Zanzibar Escape</h3>
+                            <div class="text-right">
+                                <span class="block text-xs text-gray-400 line-through">₦1.5M</span>
+                                <span class="block font-bold text-vision-dark text-lg">₦1,250,000</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-4">5 Days, 4 Nights | Stone Town & Beach</p>
+                        
+                        <!-- Inclusions -->
+                        <ul class="text-sm text-gray-600 space-y-2 mb-6 flex-grow">
+                            <li class="flex items-center"><i class="fa-solid fa-plane text-vision-gold w-6"></i> Return Flights (Lagos)</li>
+                            <li class="flex items-center"><i class="fa-solid fa-hotel text-vision-gold w-6"></i> 4-Star Beach Resort</li>
+                            <li class="flex items-center"><i class="fa-solid fa-utensils text-vision-gold w-6"></i> Breakfast & Dinner</li>
+                            <li class="flex items-center"><i class="fa-solid fa-passport text-vision-gold w-6"></i> Visa Assistance</li>
+                        </ul>
+
+                        <button onclick="openModal('Zanzibar Escape')" class="w-full border-2 border-vision-dark text-vision-dark font-bold py-2 rounded-lg hover:bg-vision-dark hover:text-white transition">
+                            Get Quote
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 2: Maldives -->
+                <div class="deal-card bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 flex flex-col h-full relative">
+                    <!-- Ribbon -->
+                    <div class="absolute top-0 left-0 bg-vision-dark text-white text-xs font-bold px-4 py-2 rounded-br-lg z-10">HONEYMOON SPECIAL</div>
+                    
+                    <div class="relative h-64">
+                        <img src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Maldives" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-heading font-bold text-xl text-vision-dark">Maldives Luxury</h3>
+                            <div class="text-right">
+                                <span class="block text-xs text-gray-400 line-through">₦3.2M</span>
+                                <span class="block font-bold text-vision-dark text-lg">₦2,850,000</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-4">6 Days | Overwater Villa Experience</p>
+                        
+                        <ul class="text-sm text-gray-600 space-y-2 mb-6 flex-grow">
+                            <li class="flex items-center"><i class="fa-solid fa-plane text-vision-gold w-6"></i> Qatar/Emirates Flights</li>
+                            <li class="flex items-center"><i class="fa-solid fa-water text-vision-gold w-6"></i> Speedboat Transfer</li>
+                            <li class="flex items-center"><i class="fa-solid fa-wine-glass text-vision-gold w-6"></i> All-Inclusive Drinks</li>
+                            <li class="flex items-center"><i class="fa-solid fa-camera text-vision-gold w-6"></i> Free Photoshoot</li>
+                        </ul>
+
+                        <button onclick="openModal('Maldives Luxury')" class="w-full bg-vision-gold text-vision-dark font-bold py-2 rounded-lg hover:bg-yellow-500 transition shadow-md">
+                            Reserve Spot
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 3: Dubai -->
+                <div class="deal-card bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 flex flex-col h-full">
+                    <div class="relative h-64">
+                        <img src="https://images.unsplash.com/photo-1512453979798-5ea904ac6605?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dubai" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-heading font-bold text-xl text-vision-dark">Dubai Shopping</h3>
+                            <div class="text-right">
+                                <span class="block text-xs text-gray-400 line-through">₦900k</span>
+                                <span class="block font-bold text-vision-dark text-lg">₦750,000</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-4">5 Days | City & Desert Safari</p>
+                        
+                        <ul class="text-sm text-gray-600 space-y-2 mb-6 flex-grow">
+                            <li class="flex items-center"><i class="fa-solid fa-plane text-vision-gold w-6"></i> Direct Flights</li>
+                            <li class="flex items-center"><i class="fa-solid fa-building text-vision-gold w-6"></i> 4-Star Downtown Hotel</li>
+                            <li class="flex items-center"><i class="fa-solid fa-car-side text-vision-gold w-6"></i> Desert Safari & BBQ</li>
+                            <li class="flex items-center"><i class="fa-solid fa-file-contract text-vision-gold w-6"></i> UAE Visa Included</li>
+                        </ul>
+
+                        <button onclick="openModal('Dubai Shopping')" class="w-full border-2 border-vision-dark text-vision-dark font-bold py-2 rounded-lg hover:bg-vision-dark hover:text-white transition">
+                            Get Quote
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- View All Link -->
+            <div class="text-center mt-12">
+                <p class="text-gray-500 mb-4">Don't see what you like?</p>
+                <a href="#custom-plan" class="inline-flex items-center font-bold text-vision-dark hover:text-vision-gold transition">
+                    Browse Custom Packages <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Custom Plan / Lead Gen Section (Now Second) -->
+    <section id="custom-plan" class="py-20 bg-vision-dark text-white relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-vision-gold rounded-full filter blur-3xl opacity-10 transform translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-10 transform -translate-x-1/2 translate-y-1/2"></div>
+
+        <div class="container mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12">
+            <div class="md:w-1/2">
+                <h2 class="font-heading text-3xl md:text-5xl font-bold mb-6">Your Dream, <span class="text-vision-gold">Your Budget.</span></h2>
+                <p class="text-gray-300 text-lg mb-8 leading-relaxed">
+                    Not everyone fits into a pre-made package. Tell us where you want to go, and our travel architects will build a custom itinerary just for you.
+                </p>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center"><i class="fa-solid fa-check-circle text-vision-gold mr-3"></i> Pay in convenient installments</li>
+                    <li class="flex items-center"><i class="fa-solid fa-check-circle text-vision-gold mr-3"></i> Exclusive hotel upgrades</li>
+                    <li class="flex items-center"><i class="fa-solid fa-check-circle text-vision-gold mr-3"></i> Expert visa advisory included</li>
+                </ul>
+            </div>
+
+            <div class="md:w-1/2 bg-white text-gray-800 rounded-2xl p-8 shadow-2xl w-full max-w-md">
+                <h3 class="font-bold text-2xl mb-1">Plan My Trip</h3>
+                <p class="text-sm text-gray-500 mb-6">Fill this form to get a callback within 2 hours.</p>
+                
+                <form onsubmit="submitCustomForm(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Destination of Interest</label>
+                        <input type="text" placeholder="e.g. Paris, Bali, or 'Not Sure'" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-vision-gold transition">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Travelers</label>
+                            <input type="number" placeholder="2" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-vision-gold transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Budget (₦)</label>
+                            <select class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-vision-gold transition">
+                                <option>500k - 1M</option>
+                                <option>1M - 2M</option>
+                                <option>2M - 5M</option>
+                                <option>5M+</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Your WhatsApp Number</label>
+                        <input type="tel" placeholder="+234..." required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-vision-gold transition">
+                    </div>
+                    <button class="w-full bg-vision-dark text-white font-bold py-3 rounded-lg hover:bg-gray-800 transition">
+                        Start Planning
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Why VisionFly Section / Personal Concierge (Now Third) -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-blue-50 text-vision-dark rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-xl mb-2">Personal Concierge</h3>
+                    <p class="text-gray-600 text-sm">We don't just book; we manage. From visa assistance to special dinner reservations.</p>
+                </div>
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-blue-50 text-vision-dark rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-xl mb-2">Transparent Pricing</h3>
+                    <p class="text-gray-600 text-sm">No hidden fees. Our all-inclusive packages cover flights, hotels, and tours.</p>
+                </div>
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-blue-50 text-vision-dark rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-xl mb-2">24/7 Support</h3>
+                    <p class="text-gray-600 text-sm">Stuck at an airport? Need a change? We are just a WhatsApp message away.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Stop Dreaming / Original Hero Section (Now Last) -->
+    <section class="hero-bg h-screen flex items-center justify-center text-center px-4 relative">
+        <div class="max-w-4xl mx-auto text-white mt-16">
+            <span class="bg-vision-gold text-vision-dark font-bold py-1 px-4 rounded-full text-sm uppercase tracking-wider mb-6 inline-block animate-pulse">
+                Limited Time Offers
+            </span>
+            <h1 class="font-heading text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight">
+                Stop Dreaming.<br>Start <span class="text-vision-gold">Packing.</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl mx-auto">
+                Exclusive all-inclusive packages for honeymoons, family vacations, and solo adventures. Curated by VisionFly experts.
+            </p>
+            <!-- Call to action loops back to top deals -->
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="#featured-deals" class="bg-vision-gold text-vision-dark font-bold py-4 px-8 rounded-full text-lg hover:bg-white transition transform hover:scale-105 shadow-xl">
+                    View Deals Again
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4">VisionFly</h4>
+                <p class="text-sm">Making luxury travel accessible for everyone. Your journey begins with a vision.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4">Quick Links</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-vision-gold">Flight Search</a></li>
+                    <li><a href="#" class="hover:text-vision-gold">Vacation Packages</a></li>
+                    <li><a href="#" class="hover:text-vision-gold">Visa Assistance</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4">Contact</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><i class="fa-solid fa-phone mr-2"></i> +234 800 123 4567</li>
+                    <li><i class="fa-solid fa-envelope mr-2"></i> holidays@visionfly.com.ng</li>
+                    <li><i class="fa-solid fa-location-dot mr-2"></i> Lagos, Nigeria</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4">Follow Us</h4>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-vision-gold hover:text-vision-dark transition"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-vision-gold hover:text-vision-dark transition"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-vision-gold hover:text-vision-dark transition"><i class="fa-brands fa-facebook-f"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="container mx-auto px-6 text-center text-xs border-t border-gray-800 pt-8">
+            &copy; 2024 VisionFly Travel. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Inquiry Modal (Hidden by default) -->
+    <div id="quote-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[60] hidden flex items-end md:items-center justify-center">
+        <div class="bg-white w-full md:w-[500px] md:rounded-2xl rounded-t-2xl overflow-hidden animate-[slideUp_0.3s_ease-out]">
+            <div class="bg-vision-dark p-6 flex justify-between items-center text-white">
+                <div>
+                    <h3 class="font-bold text-xl">Confirm Interest</h3>
+                    <p class="text-xs text-vision-gold mt-1">Package: <span id="modal-package-name" class="font-bold">General</span></p>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6">
+                <form onsubmit="submitModalForm(event)" class="space-y-4">
+                    <input type="hidden" id="modal-hidden-package">
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" required class="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-vision-gold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
+                        <input type="tel" required placeholder="To discuss details..." class="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-vision-gold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Travel Date</label>
+                        <input type="date" required class="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-vision-gold">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-vision-gold text-vision-dark font-bold py-3 rounded-lg hover:bg-yellow-500 transition shadow-lg mt-2">
+                        Send Inquiry
+                    </button>
+                </form>
+                <p class="text-center text-xs text-gray-400 mt-4">We will contact you to confirm availability and payments.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div id="success-toast" class="fixed top-24 right-5 bg-green-600 text-white px-6 py-4 rounded-lg shadow-2xl transform translate-x-full transition-transform duration-300 z-[70] flex items-center">
+        <i class="fa-solid fa-circle-check text-2xl mr-3"></i>
+        <div>
+            <h4 class="font-bold text-sm">Request Sent!</h4>
+            <p class="text-xs">Our agent will WhatsApp you shortly.</p>
+        </div>
+    </div>
+
+    <script>
+        // Toggle Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Modal Logic
+        function openModal(packageName) {
+            const modal = document.getElementById('quote-modal');
+            const nameSpan = document.getElementById('modal-package-name');
+            const hiddenInput = document.getElementById('modal-hidden-package');
+            
+            nameSpan.textContent = packageName;
+            hiddenInput.value = packageName;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('quote-modal').classList.add('hidden');
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('quote-modal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Form Submission Logic (Simulation)
+        function submitModalForm(e) {
+            e.preventDefault();
+            closeModal();
+            showToast();
+        }
+
+        function submitCustomForm(e) {
+            e.preventDefault();
+            showToast();
+        }
+
+        function showToast() {
+            const toast = document.getElementById('success-toast');
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
