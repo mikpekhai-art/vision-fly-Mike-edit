@@ -220,6 +220,15 @@ export default function TravelPackagesPage() {
         numberOfTravellers: "1",
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [customTripData, setCustomTripData] = useState({
+        fullName: "",
+        email: "",
+        destination: "",
+        travelers: "2",
+        budget: "1M - 2M",
+        whatsapp: "",
+    });
+    const [isCustomTripSubmitting, setIsCustomTripSubmitting] = useState(false);
 
     const openModal = (pkg: TravelPackage) => {
         setSelectedPackage(pkg);
@@ -283,6 +292,50 @@ export default function TravelPackagesPage() {
             toast.error("Failed to submit inquiry. Please try again.");
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleCustomTripSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!customTripData.fullName || !customTripData.email) {
+            toast.error("Please fill in your name and email");
+            return;
+        }
+
+        setIsCustomTripSubmitting(true);
+
+        try {
+            const response = await fetch("/api/custom-trip", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    customerName: customTripData.fullName,
+                    customerEmail: customTripData.email,
+                    destination: customTripData.destination,
+                    travelers: customTripData.travelers,
+                    budget: customTripData.budget,
+                    whatsapp: customTripData.whatsapp,
+                }),
+            });
+
+            if (response.ok) {
+                toast.success("Request submitted! Check your email for confirmation.");
+                setCustomTripData({
+                    fullName: "",
+                    email: "",
+                    destination: "",
+                    travelers: "2",
+                    budget: "1M - 2M",
+                    whatsapp: "",
+                });
+            } else {
+                toast.error("Failed to submit request. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error submitting custom trip request:", error);
+            toast.error("Failed to submit request. Please try again.");
+        } finally {
+            setIsCustomTripSubmitting(false);
         }
     };
 
@@ -440,19 +493,59 @@ export default function TravelPackagesPage() {
                         <h3 className="font-bold text-2xl mb-1 text-customBlue">Plan My Trip</h3>
                         <p className="text-sm text-gray-500 mb-6">Fill this form to get a callback within 2 hours.</p>
                         
-                        <form className="space-y-4">
+                        <form onSubmit={handleCustomTripSubmit} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name *</label>
+                                    <input 
+                                        type="text" 
+                                        required
+                                        value={customTripData.fullName}
+                                        onChange={(e) => setCustomTripData({ ...customTripData, fullName: e.target.value })}
+                                        placeholder="Your name" 
+                                        className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition" 
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Email *</label>
+                                    <input 
+                                        type="email" 
+                                        required
+                                        value={customTripData.email}
+                                        onChange={(e) => setCustomTripData({ ...customTripData, email: e.target.value })}
+                                        placeholder="you@email.com" 
+                                        className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition" 
+                                    />
+                                </div>
+                            </div>
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Destination of Interest</label>
-                                <input type="text" placeholder="e.g. Paris, Bali, or 'Not Sure'" className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition" />
+                                <input 
+                                    type="text" 
+                                    value={customTripData.destination}
+                                    onChange={(e) => setCustomTripData({ ...customTripData, destination: e.target.value })}
+                                    placeholder="e.g. Paris, Bali, or 'Not Sure'" 
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition" 
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Travelers</label>
-                                    <input type="number" placeholder="2" className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition" />
+                                    <input 
+                                        type="number" 
+                                        value={customTripData.travelers}
+                                        onChange={(e) => setCustomTripData({ ...customTripData, travelers: e.target.value })}
+                                        placeholder="2" 
+                                        className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition" 
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Budget (₦)</label>
-                                    <select className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition">
+                                    <select 
+                                        value={customTripData.budget}
+                                        onChange={(e) => setCustomTripData({ ...customTripData, budget: e.target.value })}
+                                        className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition"
+                                    >
                                         <option>500k - 1M</option>
                                         <option>1M - 2M</option>
                                         <option>2M - 5M</option>
@@ -462,10 +555,20 @@ export default function TravelPackagesPage() {
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Your WhatsApp Number</label>
-                                <input type="tel" placeholder="+234..." className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition" />
+                                <input 
+                                    type="tel" 
+                                    value={customTripData.whatsapp}
+                                    onChange={(e) => setCustomTripData({ ...customTripData, whatsapp: e.target.value })}
+                                    placeholder="+234..." 
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500 transition" 
+                                />
                             </div>
-                            <button type="submit" className="w-full bg-customBlue text-white font-bold py-3 rounded-lg hover:bg-blue-800 transition">
-                                Start Planning
+                            <button 
+                                type="submit" 
+                                disabled={isCustomTripSubmitting}
+                                className="w-full bg-customBlue text-white font-bold py-3 rounded-lg hover:bg-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isCustomTripSubmitting ? "Submitting..." : "Start Planning"}
                             </button>
                         </form>
                     </div>
