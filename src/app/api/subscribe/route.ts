@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 
     const adminMailOptions = {
       from: `"Vision Fly System" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL || "visionfly.ng@gmail.com",
+      to: process.env.ADMIN_EMAIL || "info@visionfly.com.ng",
       replyTo: email,
       subject: `[Vision Fly] New Mailing List Subscription`,
       text: `

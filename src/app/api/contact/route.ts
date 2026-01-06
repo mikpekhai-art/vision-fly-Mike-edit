@@ -100,7 +100,7 @@ export async function POST(request: Request) {
     // 4. Admin Email (Sent TO you, FROM info@)
     const adminMailOptions = {
       from: `"Vision Fly System" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL || "visionfly.ng@gmail.com", // Your personal Gmail
+      to: process.env.ADMIN_EMAIL || "info@visionfly.com.ng",
       replyTo: email, // Hitting reply goes to the customer
       subject: subject ? `[Vision Fly Contact] ${subject}` : `New Contact Form Submission from ${name}`,
       text: `

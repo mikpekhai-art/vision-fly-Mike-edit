@@ -137,9 +137,9 @@ export default function RoutePage({ params }: Props) {
                   <Phone size={18} />
                   <span>+1 778 522 4683</span>
                 </a>
-                <a href="mailto:charter@visionfly.com.ng" className="flex items-center gap-3 text-gray-700 hover:text-customBlue transition">
+                <a href="mailto:info@visionfly.com.ng" className="flex items-center gap-3 text-gray-700 hover:text-customBlue transition">
                   <Mail size={18} />
-                  <span>charter@visionfly.com.ng</span>
+                  <span>info@visionfly.com.ng</span>
                 </a>
               </div>
               <Link 

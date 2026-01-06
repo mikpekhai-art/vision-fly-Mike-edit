@@ -223,7 +223,7 @@ The VisionFly Team`;
 
         await transporter.sendMail({
             from: `"Vision Fly Travel" <${process.env.EMAIL_USER}>`,
-            to: process.env.ADMIN_EMAIL || "visionfly.ng@gmail.com",
+            to: process.env.ADMIN_EMAIL || "info@visionfly.com.ng",
             replyTo: customerEmail,
             subject: `New Travel Package Inquiry: ${packageName}`,
             html: adminEmailHtml,
