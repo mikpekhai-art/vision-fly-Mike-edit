@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Plane, Hotel, Utensils, Camera, Car, FileText, Wine, Droplets, BookOpen, Building, Check, Phone, Mail, MapPin, X, Users, Wallet, Headset, UserCheck } from "lucide-react";
+import { Plane, Hotel, Utensils, Camera, Car, FileText, Wine, Droplets, BookOpen, Building, Check, Phone, Mail, MapPin, X, Users, Wallet, Headset, UserCheck, Sparkles, PiggyBank } from "lucide-react";
 import toast from "react-hot-toast";
 import {
     Dialog,
@@ -19,12 +19,15 @@ interface TravelPackage {
     destination: string;
     duration: string;
     description: string;
-    originalPrice: string;
-    price: string;
+    luxuryPrice: string;
+    luxuryPriceDisplay: string;
+    saverPrice: string;
+    saverPriceDisplay: string;
     image: string;
     tag?: string;
     tagStyle?: "popular" | "special";
-    inclusions: { icon: string; text: string }[];
+    luxuryInclusions: { icon: string; text: string }[];
+    saverInclusions: { icon: string; text: string }[];
     buttonStyle: "outline" | "filled";
 }
 
@@ -35,15 +38,23 @@ const travelPackages: TravelPackage[] = [
         destination: "Zanzibar",
         duration: "5 Days, 4 Nights | Stone Town & Beach",
         description: "Experience the beautiful beaches and rich culture of Zanzibar",
-        originalPrice: "₦1.5M",
-        price: "₦1,250,000",
+        luxuryPrice: "₦2,750,000",
+        luxuryPriceDisplay: "₦2.75M",
+        saverPrice: "₦2,250,000",
+        saverPriceDisplay: "₦2.25M",
         image: "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         tag: "POPULAR",
         tagStyle: "popular",
-        inclusions: [
-            { icon: "plane", text: "Return Flights (Lagos)" },
+        luxuryInclusions: [
+            { icon: "plane", text: "Direct Return Flights" },
             { icon: "hotel", text: "4-Star Beach Resort" },
             { icon: "utensils", text: "Breakfast & Dinner" },
+            { icon: "passport", text: "Visa Assistance" },
+        ],
+        saverInclusions: [
+            { icon: "plane", text: "Return Flights (1 Stop)" },
+            { icon: "hotel", text: "3-Star Beach Hotel" },
+            { icon: "utensils", text: "Breakfast Only" },
             { icon: "passport", text: "Visa Assistance" },
         ],
         buttonStyle: "outline",
@@ -54,16 +65,24 @@ const travelPackages: TravelPackage[] = [
         destination: "Maldives",
         duration: "6 Days | Overwater Villa Experience",
         description: "Ultimate luxury honeymoon in paradise",
-        originalPrice: "₦3.2M",
-        price: "₦2,850,000",
+        luxuryPrice: "₦4,650,000",
+        luxuryPriceDisplay: "₦4.65M",
+        saverPrice: "₦4,150,000",
+        saverPriceDisplay: "₦4.15M",
         image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         tag: "HONEYMOON SPECIAL",
         tagStyle: "special",
-        inclusions: [
-            { icon: "plane", text: "Qatar/Emirates Flights" },
+        luxuryInclusions: [
+            { icon: "plane", text: "Qatar/Emirates Direct" },
             { icon: "water", text: "Speedboat Transfer" },
             { icon: "wine", text: "All-Inclusive Drinks" },
             { icon: "camera", text: "Free Photoshoot" },
+        ],
+        saverInclusions: [
+            { icon: "plane", text: "Connecting Flights" },
+            { icon: "water", text: "Speedboat Transfer" },
+            { icon: "utensils", text: "Half Board" },
+            { icon: "hotel", text: "Beach Villa (3-Star)" },
         ],
         buttonStyle: "filled",
     },
@@ -73,12 +92,20 @@ const travelPackages: TravelPackage[] = [
         destination: "Dubai",
         duration: "5 Days | City & Desert Safari",
         description: "Shopping, luxury, and desert adventures",
-        originalPrice: "₦900k",
-        price: "₦750,000",
+        luxuryPrice: "₦2,550,000",
+        luxuryPriceDisplay: "₦2.55M",
+        saverPrice: "₦2,050,000",
+        saverPriceDisplay: "₦2.05M",
         image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        inclusions: [
+        luxuryInclusions: [
             { icon: "plane", text: "Direct Flights" },
             { icon: "building", text: "4-Star Downtown Hotel" },
+            { icon: "car", text: "Desert Safari & BBQ" },
+            { icon: "file", text: "UAE Visa Included" },
+        ],
+        saverInclusions: [
+            { icon: "plane", text: "Connecting Flights" },
+            { icon: "building", text: "3-Star City Hotel" },
             { icon: "car", text: "Desert Safari & BBQ" },
             { icon: "file", text: "UAE Visa Included" },
         ],
@@ -90,15 +117,23 @@ const travelPackages: TravelPackage[] = [
         destination: "Paris",
         duration: "7 Days | City of Love Experience",
         description: "Romantic getaway in the heart of France",
-        originalPrice: "₦2.8M",
-        price: "₦2,450,000",
+        luxuryPrice: "₦5,250,000",
+        luxuryPriceDisplay: "₦5.25M",
+        saverPrice: "₦4,750,000",
+        saverPriceDisplay: "₦4.75M",
         image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         tag: "BESTSELLER",
         tagStyle: "popular",
-        inclusions: [
-            { icon: "plane", text: "Return Flights" },
+        luxuryInclusions: [
+            { icon: "plane", text: "Direct Return Flights" },
             { icon: "hotel", text: "4-Star Champs-Élysées Hotel" },
             { icon: "utensils", text: "Seine River Dinner Cruise" },
+            { icon: "camera", text: "Eiffel Tower Experience" },
+        ],
+        saverInclusions: [
+            { icon: "plane", text: "Connecting Flights (1 Stop)" },
+            { icon: "hotel", text: "3-Star Central Paris Hotel" },
+            { icon: "utensils", text: "Daily Breakfast" },
             { icon: "camera", text: "Eiffel Tower Experience" },
         ],
         buttonStyle: "outline",
@@ -109,14 +144,22 @@ const travelPackages: TravelPackage[] = [
         destination: "Bali",
         duration: "8 Days | Temples, Rice Fields & Beaches",
         description: "Discover the magic of Indonesia",
-        originalPrice: "₦1.8M",
-        price: "₦1,550,000",
+        luxuryPrice: "₦3,950,000",
+        luxuryPriceDisplay: "₦3.95M",
+        saverPrice: "₦3,450,000",
+        saverPriceDisplay: "₦3.45M",
         image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        inclusions: [
-            { icon: "plane", text: "Return Flights via Singapore" },
+        luxuryInclusions: [
+            { icon: "plane", text: "Direct via Singapore" },
             { icon: "hotel", text: "Ubud Villa + Beach Resort" },
             { icon: "utensils", text: "Daily Breakfast" },
             { icon: "car", text: "Private Driver & Tours" },
+        ],
+        saverInclusions: [
+            { icon: "plane", text: "Connecting Flights" },
+            { icon: "hotel", text: "3-Star Hotels" },
+            { icon: "utensils", text: "Daily Breakfast" },
+            { icon: "car", text: "Shared Tours" },
         ],
         buttonStyle: "filled",
     },
@@ -126,14 +169,22 @@ const travelPackages: TravelPackage[] = [
         destination: "Cape Town",
         duration: "6 Days | City, Wine & Wildlife",
         description: "South Africa's finest experiences",
-        originalPrice: "₦2.2M",
-        price: "₦1,950,000",
+        luxuryPrice: "₦3,350,000",
+        luxuryPriceDisplay: "₦3.35M",
+        saverPrice: "₦2,850,000",
+        saverPriceDisplay: "₦2.85M",
         image: "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         tag: "VISA-FREE",
         tagStyle: "popular",
-        inclusions: [
+        luxuryInclusions: [
             { icon: "plane", text: "Direct Flights" },
             { icon: "hotel", text: "Waterfront Boutique Hotel" },
+            { icon: "wine", text: "Cape Winelands Tour" },
+            { icon: "camera", text: "Table Mountain Cable Car" },
+        ],
+        saverInclusions: [
+            { icon: "plane", text: "Connecting Flights" },
+            { icon: "hotel", text: "3-Star City Hotel" },
             { icon: "wine", text: "Cape Winelands Tour" },
             { icon: "camera", text: "Table Mountain Cable Car" },
         ],
@@ -161,6 +212,7 @@ const getIcon = (iconName: string) => {
 export default function TravelPackagesPage() {
     const [showModal, setShowModal] = useState(false);
     const [selectedPackage, setSelectedPackage] = useState<TravelPackage | null>(null);
+    const [budgetOption, setBudgetOption] = useState<"luxury" | "saver">("luxury");
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
@@ -180,6 +232,18 @@ export default function TravelPackagesPage() {
         setFormData({ fullName: "", email: "", phone: "", numberOfTravellers: "1" });
     };
 
+    const getDisplayPrice = (pkg: TravelPackage) => {
+        return budgetOption === "luxury" ? pkg.luxuryPrice : pkg.saverPrice;
+    };
+
+    const getDisplayPriceShort = (pkg: TravelPackage) => {
+        return budgetOption === "luxury" ? pkg.luxuryPriceDisplay : pkg.saverPriceDisplay;
+    };
+
+    const getInclusions = (pkg: TravelPackage) => {
+        return budgetOption === "luxury" ? pkg.luxuryInclusions : pkg.saverInclusions;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedPackage || !formData.fullName || !formData.email) {
@@ -190,6 +254,9 @@ export default function TravelPackagesPage() {
         setIsSubmitting(true);
 
         try {
+            const currentPrice = getDisplayPrice(selectedPackage);
+            const packageType = budgetOption === "luxury" ? "Luxury" : "Saver";
+            
             const response = await fetch("/api/travel-packages", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -198,10 +265,10 @@ export default function TravelPackagesPage() {
                     customerEmail: formData.email,
                     customerPhone: formData.phone,
                     numberOfTravellers: formData.numberOfTravellers,
-                    packageName: selectedPackage.name,
+                    packageName: `${selectedPackage.name} (${packageType})`,
                     destination: selectedPackage.destination,
                     duration: selectedPackage.duration,
-                    price: selectedPackage.price,
+                    price: currentPrice,
                 }),
             });
 
@@ -232,6 +299,41 @@ export default function TravelPackagesPage() {
                         </p>
                     </div>
 
+                    <div className="flex justify-center mb-8">
+                        <div className="bg-white rounded-full p-1.5 shadow-lg border border-gray-200 inline-flex">
+                            <button
+                                onClick={() => setBudgetOption("luxury")}
+                                className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${
+                                    budgetOption === "luxury"
+                                        ? "bg-customBlue text-white shadow-md"
+                                        : "text-gray-600 hover:text-customBlue"
+                                }`}
+                            >
+                                <Sparkles className="w-4 h-4" />
+                                Luxury
+                            </button>
+                            <button
+                                onClick={() => setBudgetOption("saver")}
+                                className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${
+                                    budgetOption === "saver"
+                                        ? "bg-cyan-500 text-white shadow-md"
+                                        : "text-gray-600 hover:text-cyan-500"
+                                }`}
+                            >
+                                <PiggyBank className="w-4 h-4" />
+                                Saver
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="text-center mb-8">
+                        <p className="text-sm text-gray-500">
+                            {budgetOption === "luxury" 
+                                ? "Premium 4-star hotels & direct flights for ultimate comfort" 
+                                : "Budget-friendly 3-star hotels & connecting flights to save more"}
+                        </p>
+                    </div>
+
                     <div className="flex justify-center gap-4 mb-12 flex-wrap">
                         <button className="px-6 py-2 bg-customBlue text-white rounded-full text-sm font-semibold shadow-lg">All Deals</button>
                         <button className="px-6 py-2 bg-white text-gray-600 hover:bg-gray-100 rounded-full text-sm font-semibold border border-gray-200">Honeymoon</button>
@@ -258,19 +360,25 @@ export default function TravelPackagesPage() {
                                             {pkg.tag}
                                         </div>
                                     )}
+                                    {budgetOption === "saver" && (
+                                        <div className="absolute bottom-4 left-4 bg-green-500 text-white font-bold px-3 py-1 rounded text-xs shadow-md flex items-center gap-1">
+                                            <PiggyBank className="w-3 h-3" />
+                                            Save ₦500k
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="p-6 flex-grow flex flex-col">
                                     <div className="flex justify-between items-start mb-2">
                                         <h3 className="font-bold text-xl text-customBlue">{pkg.name}</h3>
                                         <div className="text-right">
-                                            <span className="block text-xs text-gray-400 line-through">{pkg.originalPrice}</span>
-                                            <span className="block font-bold text-customBlue text-lg">{pkg.price}</span>
+                                            <span className="block text-xs text-gray-400">Starting from</span>
+                                            <span className="block font-bold text-customBlue text-lg">{getDisplayPriceShort(pkg)}</span>
                                         </div>
                                     </div>
                                     <p className="text-gray-500 text-sm mb-4">{pkg.duration}</p>
                                     
                                     <ul className="text-sm text-gray-600 space-y-2 mb-6 flex-grow">
-                                        {pkg.inclusions.map((item, index) => (
+                                        {getInclusions(pkg).map((item, index) => (
                                             <li key={index} className="flex items-center gap-2">
                                                 {getIcon(item.icon)}
                                                 <span>{item.text}</span>
@@ -416,6 +524,9 @@ export default function TravelPackagesPage() {
                         {selectedPackage && (
                             <p className="text-cyan-300 text-sm mt-1">
                                 Package: <span className="font-bold">{selectedPackage.name}</span>
+                                <span className="ml-2 bg-white/20 px-2 py-0.5 rounded text-xs">
+                                    {budgetOption === "luxury" ? "Luxury" : "Saver"}
+                                </span>
                             </p>
                         )}
                     </DialogHeader>
@@ -425,7 +536,18 @@ export default function TravelPackagesPage() {
                             <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Selected Package</p>
                             <p className="font-bold text-customBlue">{selectedPackage?.name}</p>
                             <p className="text-sm text-gray-600">{selectedPackage?.duration}</p>
-                            <p className="text-lg font-bold text-cyan-600 mt-1">{selectedPackage?.price}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                                <p className="text-lg font-bold text-cyan-600">
+                                    {selectedPackage && getDisplayPrice(selectedPackage)}
+                                </p>
+                                <span className={`text-xs px-2 py-0.5 rounded ${
+                                    budgetOption === "luxury" 
+                                        ? "bg-customBlue/10 text-customBlue" 
+                                        : "bg-green-100 text-green-700"
+                                }`}>
+                                    {budgetOption === "luxury" ? "Luxury" : "Saver"}
+                                </span>
+                            </div>
                         </div>
 
                         <div>
@@ -447,11 +569,11 @@ export default function TravelPackagesPage() {
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500"
-                                placeholder="your@email.com"
+                                placeholder="Enter your email"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                             <input 
                                 type="tel" 
                                 value={formData.phone}
@@ -461,33 +583,33 @@ export default function TravelPackagesPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Number of Travellers *</label>
-                            <input 
-                                type="number" 
-                                required
-                                min="1"
-                                max="50"
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Number of Travellers</label>
+                            <select 
                                 value={formData.numberOfTravellers}
                                 onChange={(e) => setFormData({ ...formData, numberOfTravellers: e.target.value })}
                                 className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-cyan-500"
-                                placeholder="1"
-                            />
+                            >
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                                    <option key={num} value={num}>{num} {num === 1 ? 'Traveller' : 'Travellers'}</option>
+                                ))}
+                                <option value="10+">10+ Travellers</option>
+                            </select>
                         </div>
-                        
+
                         <button 
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full bg-cyan-500 text-white font-bold py-3 rounded-lg hover:bg-cyan-600 transition disabled:opacity-50"
+                            className="w-full bg-customBlue text-white font-bold py-3 rounded-lg hover:bg-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isSubmitting ? "Submitting..." : "Submit Inquiry"}
                         </button>
-                        
                         <p className="text-xs text-gray-500 text-center">
-                            Our travel architects will reach out within 2 hours to discuss your trip.
+                            We&apos;ll contact you within 24 hours with more details.
                         </p>
                     </form>
                 </DialogContent>
             </Dialog>
+
             <Footer />
         </div>
     );
